@@ -26,7 +26,8 @@ public:
     Corpus corpus;
 
     void set_context(Context );
-    void setup_context(const char*,unsigned ,unsigned ,unsigned ,unsigned ,unsigned ,unsigned ,double,double,double);
+    void setup_context(const char*,unsigned ,unsigned ,unsigned ,unsigned ,unsigned ,unsigned ,double,double,double,
+                       unsigned short);
 
     void read_bulk(const char*,const char*);
     //void read_bulk_single(const char*,const char*);

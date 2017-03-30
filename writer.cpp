@@ -63,3 +63,14 @@ vector<pair<unsigned ,bool> > * Writer::getlist(uint32_t & p1, uint32_t &p2) {
     this->jobLock.unlock();
     return NULL;
 }
+
+
+void Writer::output(std::vector<std::pair<unsigned long, unsigned long> > *matches, uint32_t p1, uint32_t p2) {
+
+    this->printLock.lock();
+    for(auto it=matches->begin(); it != matches->end(); ++it){
+        //this->output_file<<this->corpus.
+    }
+
+    this->printLock.unlock();
+}

@@ -129,8 +129,9 @@ void Context::approximate() {
     return;
 }
 
-void Context::prepare_context(const char *map_addr, unsigned slice_size,unsigned step_size, unsigned perm_count, unsigned shingle_size,
-                              unsigned shingle_overlap, unsigned bucket_count,double thresh,double match_threshold,double minimum_length) {
+void Context::prepare_context(const char *map_addr, unsigned slice_size,unsigned step_size, unsigned perm_count, unsigned shingle_size
+        ,unsigned shingle_overlap, unsigned bucket_count,double thresh,double match_threshold
+        ,double minimum_length, unsigned short max_error) {
     this->read_map(map_addr);
     this->slice_map(slice_size,step_size);
     this->prepare_for_minhash(perm_count,shingle_size,shingle_overlap);
@@ -140,4 +141,5 @@ void Context::prepare_context(const char *map_addr, unsigned slice_size,unsigned
     this->approximate();
     this->match_thresh = match_threshold;
     this->minimum_length = minimum_length;
+    this->max_error = max_error;
 }
