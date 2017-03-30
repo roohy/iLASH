@@ -111,12 +111,17 @@ void Context::prepare_for_minhash(unsigned perm_count, unsigned shingle_size, un
 void Context::approximate() {
     this->approx_list = new double[this->bucket_count+1];
     double b = 1.0/double(this->bucket_size);
+    this->minimum_match = 0;
+    this->minimum_interest = 0;
     cout<<"Approximating\n";
     for(double i = 1 ; i < this->bucket_count+1; i++){
 
         this->approx_list[unsigned (i)] = pow(i/double(this->bucket_count),b);
         cout<<i<<"/"<<this->bucket_count<<": "<<this->approx_list[unsigned (i)]<<'\n';
-        if(this->approx_list[unsigned (i)] >= this->threshold && this->minimum_match == 0){
+        if(this->approx_list[unsigned (i)] >= this->threshold && this->minimum_interest == 0){
+            this->minimum_interest = unsigned(i);
+        }
+        if(this->approx_list[unsigned (i)] >= this->match_thresh && this->minimum_match == 0){
             this->minimum_match = unsigned(i);
         }
     }
@@ -125,7 +130,7 @@ void Context::approximate() {
 }
 
 void Context::prepare_context(const char *map_addr, unsigned slice_size,unsigned step_size, unsigned perm_count, unsigned shingle_size,
-                              unsigned shingle_overlap, unsigned bucket_count,double thresh) {
+                              unsigned shingle_overlap, unsigned bucket_count,double thresh,double match_threshold,double minimum_length) {
     this->read_map(map_addr);
     this->slice_map(slice_size,step_size);
     this->prepare_for_minhash(perm_count,shingle_size,shingle_overlap);
@@ -133,4 +138,6 @@ void Context::prepare_context(const char *map_addr, unsigned slice_size,unsigned
     this->bucket_size = perm_count/bucket_count;
     this->threshold = thresh;
     this->approximate();
+    this->match_thresh = match_threshold;
+    this->minimum_length = minimum_length;
 }

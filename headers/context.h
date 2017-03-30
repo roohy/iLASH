@@ -43,9 +43,12 @@ public:
     double *approx_list;
     double threshold;
     unsigned minimum_match;
+    unsigned minimum_interest;
     unsigned shingle_overlap;
     unsigned slice_size;
     unsigned step_size;
+    double match_thresh;
+    double minimum_length;
 
 
 
@@ -58,7 +61,7 @@ public:
     void read_map(const char* );
     void slice_map(unsigned,unsigned);
     void prepare_for_minhash(unsigned ,unsigned, unsigned);
-    void prepare_context(const char *,unsigned,unsigned ,unsigned ,unsigned ,unsigned ,unsigned ,double);
+    void prepare_context(const char *,unsigned,unsigned ,unsigned ,unsigned ,unsigned ,unsigned ,double,double,double);
     void approximate();
 
 

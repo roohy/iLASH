@@ -12,21 +12,25 @@
 class Corpus{
 public:
     std::mutex *LSH_Lock;
-    std::unordered_map<uint32_t,std::vector<std::string> > **LSH_MAT;
+    std::unordered_map<uint32_t,std::vector<uint32_t > > **LSH_MAT;
 
     std::mutex agg_poiter;
-    std::unordered_map<std::string,std::unordered_map<std::string, std::vector<unsigned> > > * agg_ptr;
+    std::unordered_map<uint32_t,std::unordered_map<uint32_t, std::vector<std::pair<unsigned,bool> > > > * agg_ptr;
 
 
     std::mutex dna_lock;
     std::vector<dnabit *> dna_data;
-    std::unordered_set<std::string,uint32_t> dna_id;
+    std::unordered_map<std::string,uint32_t> dna_id;
     uint32_t person_counter;
 
     Context * context;
 
-    void initializer();
+    void initializer(Context *);
     uint32_t register_corpus(dnabit *, std::string);
+
+    void add_to_corpus(uint32_t *,uint32_t, unsigned, std::unordered_map<uint32_t,unsigned short> *);
+    void integrate(std::unordered_map<uint32_t,unsigned short> *,uint32_t,unsigned);
+
 };
 
 

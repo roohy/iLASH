@@ -19,7 +19,7 @@ public:
     uint32_t ** lsh_mat;
 
 
-    Minhasher(unsigned ,Context *);
+    Minhasher(Context *);
     void insert(uint32_t * );
     void permute(uint32_t , unsigned);
     void set_slice_num(unsigned);

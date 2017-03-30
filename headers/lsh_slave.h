@@ -6,6 +6,7 @@
 #define IBD_LSH_SLAVE_H
 
 #include "context.h"
+#include "corpus.h"
 
 #include "filereader.h"
 #include "minhasher.h"
@@ -20,24 +21,15 @@
 
 
 class LSH_Slave{
-    Context * context;
+    Corpus * corpus;
     std::mutex *linesLock;
     std::queue<std::string*> *linesQ;
-    std::unordered_map<uint32_t ,std::vector<std::string> > ** lsh_reverse_corpus;
-    std::mutex *lsh_locks;
-
-    std::unordered_map<std::string,std::unordered_map<std::string,std::vector<unsigned> > > * aggregate_map;
-    std::mutex *aggLock;
-    bool * run_flag;
+    bool * runFlag;
 public:
-    LSH_Slave(Context *,std::mutex *,std::queue<std::string*> *,std::unordered_map<uint32_t ,std::vector<std::string> > **
-            ,std::mutex *,std::unordered_map<std::string,std::unordered_map<std::string,std::vector<unsigned> > >*
-            ,std::mutex * ,bool *);
+    LSH_Slave(Corpus *,std::mutex *,std::queue<std::string*> * ,bool *);
     void run();
-    inline void corpus_generator(std::unordered_map<uint32_t ,std::vector<std::string> > **
-            ,uint32_t ** , std::unordered_map<std::string,unsigned short> *, unsigned ,std::string*);
-    inline void aggregator(std::unordered_map<std::string,std::unordered_map<std::string,std::vector<unsigned> > >*
-            ,std::unordered_map<std::string,unsigned short> *, unsigned ,std::string);
+    inline void corpus_generator( uint32_t ** , std::unordered_map<uint32_t,unsigned short> *, unsigned ,uint32_t *);
+    inline void aggregator(std::unordered_map<uint32_t,unsigned short> *, unsigned ,uint32_t *);
 };
 
 #endif //IBD_LSH_SLAVE_H
