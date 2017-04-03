@@ -143,3 +143,17 @@ void Context::prepare_context(const char *map_addr, unsigned slice_size,unsigned
     this->minimum_length = minimum_length;
     this->max_error = max_error;
 }
+
+bool Context::same_chrom(unsigned long &i1, unsigned long &i2) {
+    return (this->map_data[i1].chrome == this->map_data[i2].chrome);
+}
+
+bool Context::is_last_slice(unsigned slice_number) {
+    return !(slice_number < this->slice_idx.size()-1 && (this->map_data[this->slice_idx[slice_number].first].chrome
+                                                  == this->map_data[this->slice_idx[slice_number+1].first].chrome));
+}
+bool Context::is_first_slice(unsigned slice_number){
+    return !(slice_number > 0 && (this->map_data[this->slice_idx[slice_number].first].chrome
+                           == this->map_data[this->slice_idx[slice_number-1].first].chrome));
+
+}

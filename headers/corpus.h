@@ -20,7 +20,7 @@ public:
 
     std::mutex dna_lock;
     std::vector<dnabit *> dna_data;
-    std::unordered_map<std::string,uint32_t> dna_id;
+    std::unordered_map<uint32_t,std::string> dna_id;
     uint32_t person_counter;
 
     Context * context;

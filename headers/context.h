@@ -65,6 +65,9 @@ public:
     void prepare_context(const char *,unsigned,unsigned ,unsigned ,unsigned ,unsigned ,unsigned ,double,double,double,
                          unsigned short);
     void approximate();
+    bool same_chrom(unsigned long &i1, unsigned long &i2);
+    bool is_last_slice(unsigned);
+    bool is_first_slice(unsigned);
 
 
 };

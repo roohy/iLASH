@@ -31,9 +31,16 @@ public:
 
     void run();
 
+    void threaded();
+    inline void safeAdd(unsigned long, unsigned long,std::vector<std::pair<unsigned long, unsigned long> > *);
+
     std::vector<std::pair<unsigned , bool> > * getlist(uint32_t &,uint32_t &);
 
     void output(std::vector<std::pair<unsigned long, unsigned long> > *,uint32_t , uint32_t);
+
+    inline unsigned long extend(unsigned long tail, unsigned long bound, unsigned short error,uint32_t p1,uint32_t p2);
+    inline unsigned long back_extend(unsigned long head, unsigned long bound, unsigned short error,uint32_t p1, uint32_t p2);
+
 
     const char * output_addr;
     unsigned max_thread;
