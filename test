@@ -3,15 +3,15 @@ map ./test_files/result
 
 ped ./test_files/test.ped.100m
 
-slice_size 3000
+slice_size 2000
 
-step_size 300
+step_size 2000
 
 perm_count 12
 
 shingle_size 20
 
-shingle_overlap 5
+shingle_overlap 0
 
 bucket_count 4
 
