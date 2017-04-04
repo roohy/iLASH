@@ -9,7 +9,12 @@
 
 using namespace std;
 
+void thread_caller(Writer * writer){
+    writer->threaded();
+}
+
 Writer::Writer(const char * output_addr, unsigned max_thread, Corpus * corpus):output_file(output_addr,ofstream::out) {
+
     this->output_addr = output_addr;
     this->max_thread = max_thread;
     this->corpus = corpus;
@@ -17,6 +22,7 @@ Writer::Writer(const char * output_addr, unsigned max_thread, Corpus * corpus):o
 
     this->bit = this->corpus->agg_ptr->begin();
     this->lit = this->bit->second.begin();
+    cout<<"New Writer Object Made With Success11\n";
 }
 
 void Writer::end_file() {
@@ -83,9 +89,10 @@ void Writer::output(std::vector<std::pair<unsigned long, unsigned long> > *match
 }
 
 void Writer::run() {
+    cout<<"Starting Writer Threads...\n";
     vector<thread> thread_list;
     for(unsigned i = 0 ; i < this->max_thread ; i++){
-        thread_list.push_back(thread(this->threaded));
+        thread_list.push_back(thread(thread_caller,this));
     }
 
     for(unsigned i = 0 ; i < this->max_thread ; i++){
@@ -99,10 +106,11 @@ void Writer::threaded() {
     vector<pair<unsigned , bool> > * matches;
     matches = this->getlist(p1,p2);
     vector<pair<unsigned long, unsigned long> > * result =  new vector<pair<unsigned long, unsigned long> >();
-
+    //cout<<"Thread Starting to match\n";
     while(matches != NULL) {
         result->clear();
         //sort it
+//        cout<<"Matching"<<p1<<"---"<<p2<<'\n';
         sort(matches->begin(), matches->end()); //uses a combination of quick sort and other methods to sort
         unsigned long head = 0, tail = 0;
         unsigned short rem_error = this->corpus->context->max_error;
@@ -117,13 +125,14 @@ void Writer::threaded() {
 
                 head = tail = this->corpus->context->slice_idx[it->first].first;
                 if (!this->corpus->context->is_first_slice(it->first)) { // if it is not the first slice on a chromosome
-                    tail = this->back_extend(tail, this->corpus->context->slice_idx[it->first - 1].first, rem_error,p1,p2);
+                    tail = this->back_extend(tail, this->corpus->context->slice_idx[it->first - 1].first, rem_error,p1,p2)+1;
                     //if it is not a first so it has a back
                 }
             } // now we have a valid head an tail at the begining.
             //we should see if it is a match or not.
 
             if (it->second) {
+
                 head = this->corpus->context->slice_idx[it->first].second - 1;
                 if ((it + 1) != matches->end() && !this->corpus->context->is_last_slice(it->first)) {
                     if ((it + 1)->first == it->first + 1) {
@@ -131,7 +140,8 @@ void Writer::threaded() {
                         continue;
                     }
                     else {
-                        head = this->extend(head, this->corpus->context->slice_idx[it->first + 1].second, rem_error,p1,p2);
+                        //cout<<"ha\n";
+                        head = this->extend(head, this->corpus->context->slice_idx[it->first + 1].second, rem_error,p1,p2)-1;
                         this->safeAdd(head, tail, result);
                         ready = false;
                     }
@@ -141,7 +151,8 @@ void Writer::threaded() {
                         this->safeAdd(head, tail, result);
                     }
                     else {
-                        head = this->extend(head, this->corpus->context->slice_idx[it->first + 1].second, rem_error,p1,p2);
+                        head = this->extend(head, this->corpus->context->slice_idx[it->first + 1].second, rem_error,p1,p2)-1;
+                        this->safeAdd(head,tail,result);
                     }
                     ready = false;
                 }
@@ -167,13 +178,12 @@ void Writer::threaded() {
 
                     ready = false;
                 }
-                head = this->extend(head, maximum_bound, rem_error,p1,p2);
+                head = this->extend(head, maximum_bound, rem_error,p1,p2)-1;
                 while (head < maximum_bound - 1) {
                     this->safeAdd(head, tail, result);
                     tail = head + 2;
-                    head = tail;
 
-                    head = this->extend(head, maximum_bound, rem_error,p1,p2);
+                    head = this->extend(head, maximum_bound, rem_error,p1,p2)-1;
 
 
                 }
@@ -262,16 +272,18 @@ void Writer::threaded() {
      */
 
 
-            this->output(result, p1, p2);
-            matches = this->getlist(p1, p2);
 
         }
+
+        this->output(result, p1, p2);
+        matches = this->getlist(p1, p2);
     }
 }
 
 
 inline void Writer::safeAdd(unsigned long head, unsigned long tail, std::vector<std::pair<unsigned long, unsigned long> > *matches) {
     if(this->corpus->context->map_data[head].gen_dist - this->corpus->context->map_data[tail].gen_dist >= 0.7){
+        //cout<<"owww\n";
         matches->push_back(make_pair(tail,head));
     }
 }
@@ -279,7 +291,25 @@ inline void Writer::safeAdd(unsigned long head, unsigned long tail, std::vector<
 inline unsigned long Writer::extend(unsigned long tail, unsigned long bound, unsigned short error,uint32_t p1,uint32_t p2) {
     for(unsigned long i = tail; i < bound; i++){
         if(this->corpus->dna_data[p1][i] != this->corpus->dna_data[p2][i] ){
-            if
+            if(error > 0)
+                error--;
+            else{
+                return i;
+            }
         }
     }
+    return bound;
+}
+
+inline unsigned  long Writer::back_extend(unsigned long head, unsigned long bound, unsigned short error, uint32_t p1,
+                                          uint32_t p2) {
+    for(unsigned long i = head ; i > bound ; i--){
+        if(this->corpus->dna_data[p1][i] != this->corpus->dna_data[p2][i]){
+            if(error > 0)
+                error--;
+            else
+                return i;
+        }
+    }
+    return bound;
 }

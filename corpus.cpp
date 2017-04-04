@@ -30,6 +30,7 @@ uint32_t Corpus::register_corpus(dnabit * person_dna_data, std::string string_id
     this->dna_id[id] = string_id;
     this->person_counter++;
     this->dna_lock.unlock();
+    //cout<<"ID:"<<id<<"\n";
     return id;
 }
 

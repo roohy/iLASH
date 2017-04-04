@@ -66,10 +66,12 @@ void LSH_Slave::run() {
 
                 //preparing for LSH
                 lsh_buffer = minhash.calculate_lsh();
+
                 relatives[0].clear();
                 relatives[1].clear();
 
-
+                this->corpus_generator(lsh_buffer,relatives,i,parser.ids);
+                this->aggregator(relatives,i,parser.ids);
 
             }
 
