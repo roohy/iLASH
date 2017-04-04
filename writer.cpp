@@ -108,11 +108,11 @@ void Writer::threaded() {
     vector<pair<unsigned , bool> > * matches;
     matches = this->getlist(p1,p2);
     vector<pair<unsigned long, unsigned long> > * result =  new vector<pair<unsigned long, unsigned long> >();
-    //cout<<"Thread Starting to match\n";
+    cout<<"Thread Starting to match\n";
     while(matches != NULL) {
         result->clear();
         //sort it
-//        cout<<"Matching"<<p1<<"---"<<p2<<'\n';
+        cout<<"Matching"<<p1<<"---"<<p2<<'\n';
         sort(matches->begin(), matches->end()); //uses a combination of quick sort and other methods to sort
         unsigned long head = 0, tail = 0;
         unsigned short rem_error = this->corpus->context->max_error;
