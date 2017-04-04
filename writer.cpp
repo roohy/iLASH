@@ -23,7 +23,7 @@ Writer::Writer(const char * output_addr, unsigned max_thread, Corpus * corpus):o
 
     this->bit = this->corpus->agg_ptr->begin();
     this->lit = this->bit->second.begin();
-    cout<<"New Writer Object Made With Success11\n";
+
 }
 
 void Writer::end_file() {
@@ -95,10 +95,11 @@ void Writer::run() {
     for(unsigned i = 0 ; i < this->max_thread ; i++){
         thread_list.push_back(thread(thread_caller,this));
     }
-
+    cout<<"All Threads Working\n";
     for(unsigned i = 0 ; i < this->max_thread ; i++){
         thread_list[i].join();
     }
+    cout<<"Everything done in the writer part\n";
 }
 
 void Writer::threaded() {
