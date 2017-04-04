@@ -13,7 +13,7 @@ using namespace std;
 
 void Corpus::initializer(Context *context) {
     this->context = context;
-
+    this->person_counter = 0;
     this->LSH_MAT = new unordered_map<uint32_t, vector<uint32_t > > *[this->context->slice_count];
     this->LSH_Lock = new mutex[this->context->slice_size];
     for(unsigned i = 0 ; i < this->context->slice_count; i++){
