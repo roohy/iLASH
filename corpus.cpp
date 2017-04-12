@@ -75,7 +75,8 @@ void Corpus::integrate(std::unordered_map<uint32_t, unsigned short> *relatives, 
             }else{
                 if(this->agg_ptr[0][mini].find(maxi) == this->agg_ptr[0][mini].end()){
                     this->agg_ptr[0][mini][maxi] = vector<pair<unsigned,bool> >();
-                    this->agg_ptr[0][mini][maxi].push_back(make_pair(slice_number,(it->second >= this->context->minimum_match)));
+                    this->agg_ptr[0][mini][maxi].push_back(make_pair(slice_number,  (it->second >= this->context->minimum_match) ));
+                    //this->agg_ptr[0][mini][maxi].push_back(make_pair(slice_number,((it->second >= this->context->minimum_match) && this->are_the_same(mini,maxi,slice_number))   ));
                 }
                 else{
                     this->agg_ptr[0][mini][maxi].push_back(make_pair(slice_number,(it->second >= this->context->minimum_match)));
@@ -85,4 +86,16 @@ void Corpus::integrate(std::unordered_map<uint32_t, unsigned short> *relatives, 
     }
 
     this->agg_poiter.unlock();
+}
+
+bool Corpus::are_the_same(uint32_t id1, uint32_t id2, unsigned slice_num) {
+
+    for(unsigned long i = this->context->slice_idx[slice_num].first; i < this->context->slice_idx[slice_num].second ; i++){
+        if(this->dna_data[id1][i] != this->dna_data[id2][i]){
+            //cout<<id1<<"  "<<id2<<"--"<<slice_num<<"NOTTTTT\n";
+            return false;
+        }
+
+    }
+    return true;
 }

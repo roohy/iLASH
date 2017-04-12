@@ -30,7 +30,7 @@ public:
 
     void add_to_corpus(uint32_t *,uint32_t, unsigned, std::unordered_map<uint32_t,unsigned short> *);
     void integrate(std::unordered_map<uint32_t,unsigned short> *,uint32_t,unsigned);
-
+    bool are_the_same(uint32_t id1,uint32_t id2,unsigned slice_num);
 };
 
 

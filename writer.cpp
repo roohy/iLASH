@@ -168,6 +168,9 @@ void Writer::threaded() {
                     else {
                         maximum_bound = this->corpus->context->slice_idx[it->first + 1].second;
                         ready = false;
+                        if((it+1)->first == it->first+2){
+                            ready = true;
+                        }
                     }
                 }
                 else {
@@ -284,7 +287,7 @@ void Writer::threaded() {
 
 
 inline void Writer::safeAdd(unsigned long head, unsigned long tail, std::vector<std::pair<unsigned long, unsigned long> > *matches) {
-    if(this->corpus->context->map_data[head].gen_dist - this->corpus->context->map_data[tail].gen_dist >= 0.7){
+    if(this->corpus->context->map_data[head].gen_dist - this->corpus->context->map_data[tail].gen_dist >= this->corpus->context->minimum_length){
         //cout<<"owww\n";
         matches->push_back(make_pair(tail,head));
     }
