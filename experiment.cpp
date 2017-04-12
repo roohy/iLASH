@@ -41,7 +41,7 @@ void Experiment::read_bulk(const char *input_addr, const char *output_addr) {
 
     unsigned max_threads = std::thread::hardware_concurrency();
     cout<<"The number of cores supported by this machine is "<<max_threads<<endl;
-    max_threads += 2;
+    max_threads *= 2;
 
     queue<string *> *linesQ = new queue<string *>();
     mutex *linesLock = new mutex;
@@ -96,7 +96,7 @@ void Experiment::read_bulk(const char *input_addr, const char *output_addr) {
 
 void Experiment::write_to_file(const char *output_addr) {
     unsigned max_threads = std::thread::hardware_concurrency();
-    max_threads += 10;
+    max_threads *= 2;
     Writer writer(output_addr,max_threads,&(this->corpus));
     writer.run();
     writer.end_file();
