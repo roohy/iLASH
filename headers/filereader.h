@@ -26,6 +26,7 @@ class filereader {
     unsigned long ind;
     unsigned long last;
     unsigned long head;
+    unsigned slice_number;
     Context *context;
 
 
@@ -34,6 +35,9 @@ public:
     dnabit ** bits;
     uint32_t *hash_buffer;
     uint32_t ids[2];
+
+    uint32_t ** dna_hash;
+    unsigned shingle_ind;
 
     filereader(std::string *, Context *);
     uint32_t* getNextHashed();

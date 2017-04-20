@@ -20,6 +20,7 @@ public:
 
     std::mutex dna_lock;
     std::vector<dnabit *> dna_data;
+    std::vector<uint32_t *> dna_hashes;
     std::unordered_map<uint32_t,std::string> dna_id;
     uint32_t person_counter;
 
@@ -27,6 +28,7 @@ public:
 
     void initializer(Context *);
     uint32_t register_corpus(dnabit *, std::string);
+    uint32_t register_corpus(uint32_t *, std::string);
 
     void add_to_corpus(uint32_t *,uint32_t, unsigned, std::unordered_map<uint32_t,unsigned short> *);
     void integrate(std::unordered_map<uint32_t,unsigned short> *,uint32_t,unsigned);

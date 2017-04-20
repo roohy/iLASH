@@ -42,6 +42,10 @@ public:
     inline unsigned long back_extend(unsigned long head, unsigned long bound, unsigned short error,uint32_t p1, uint32_t p2);
 
 
+    inline unsigned  shingle_extend(unsigned  head, unsigned  bound, unsigned short error,uint32_t p1,uint32_t p2);
+    inline unsigned  shingle_back_extend(unsigned  head, unsigned  bound, unsigned short error,uint32_t p1, uint32_t p2);
+
+
     const char * output_addr;
     unsigned max_thread;
     Corpus * corpus;

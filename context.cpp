@@ -58,6 +58,7 @@ void Context::slice_map(unsigned slice_size, unsigned step_size) {
     this->step_size = step_size;
 
     unsigned i = 0;
+    unsigned shingle_i = 0;
     for(; i+slice_size < this->map_data.size();i++){
         if( this->map_data[i].chrome != this->map_data[i+slice_size].chrome ){
             cout<<"Chromosomes colliding in one slice.Don't Worry. I am preventing it!!!"<<endl;
@@ -79,6 +80,13 @@ void Context::slice_map(unsigned slice_size, unsigned step_size) {
     }
     cout<<"Number of slices:"<<this->slice_idx.size()<<'\n';
     this->slice_count = this->slice_idx.size();
+
+    unsigned temp_shingle_count;
+    for(unsigned k = 0 ; k < this->slice_count ; k++){
+        temp_shingle_count = this->shingles_in_slice(this->slice_idx[k].first,this->slice_idx[k].second);
+        this->shingle_idx.push_back(make_pair(shingle_i,shingle_i+temp_shingle_count));
+        shingle_i += temp_shingle_count;
+    }
 }
 
 void Context::prepare_for_minhash(unsigned perm_count, unsigned shingle_size, unsigned shingle_overlap) {
@@ -113,7 +121,7 @@ void Context::approximate() {
     double b = 1.0/double(this->bucket_size);
     this->minimum_match = 0;
     this->minimum_interest = 0;
-    cout<<"Approximating\n";
+    cout<<"Approximating for "<<this->threshold<<" for interest and "<<this->match_thresh<<" for Match\n";
     for(double i = 1 ; i < this->bucket_count+1; i++){
 
         this->approx_list[unsigned (i)] = pow(i/double(this->bucket_count),b);
@@ -125,7 +133,10 @@ void Context::approximate() {
             this->minimum_match = unsigned(i);
         }
     }
+    if(this->minimum_match == 0)
+        this->minimum_match = this->bucket_count+1;
 
+    cout<<"Interest T:"<<this->minimum_interest<<"\n Match T:"<<this->minimum_match<<endl;
     return;
 }
 
@@ -138,10 +149,12 @@ void Context::prepare_context(const char *map_addr, unsigned slice_size,unsigned
     this->bucket_count = bucket_count;
     this->bucket_size = perm_count/bucket_count;
     this->threshold = thresh;
-    this->approximate();
+
     this->match_thresh = match_threshold;
     this->minimum_length = minimum_length;
     this->max_error = max_error;
+    this->approximate();
+
 }
 
 bool Context::same_chrom(unsigned long &i1, unsigned long &i2) {
@@ -156,4 +169,19 @@ bool Context::is_first_slice(unsigned slice_number){
     return !(slice_number > 0 && (this->map_data[this->slice_idx[slice_number].first].chrome
                            == this->map_data[this->slice_idx[slice_number-1].first].chrome));
 
+}
+
+unsigned Context::shingles_in_slice(unsigned long first, unsigned long last) {
+    unsigned counter = 0 ;
+    while(first+this->shingle_size < last){
+        counter++;
+        this->shingle_map.push_back(make_pair(first,first+shingle_size));
+        first += this->shingle_size-this->shingle_overlap;
+    }
+    if(first<last){
+        this->shingle_map.push_back(make_pair(first,last));
+        counter++;
+    }
+
+    return counter;
 }

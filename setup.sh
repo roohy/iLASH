@@ -15,6 +15,7 @@ wget roohy.me/HM3_chr1.tgz
 
 wget roohy.me/makers.tar.gz
 
+wget roohy.me/ped.10000.tar.gz
 tar -zxvf makers.tar.gz
 
 tar -zxvf HM3_chr1.tgz

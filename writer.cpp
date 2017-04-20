@@ -107,6 +107,32 @@ void Writer::threaded() {
     uint32_t p2;
     vector<pair<unsigned , bool> > * matches;
     matches = this->getlist(p1,p2);
+    vector<pair<unsigned , unsigned > > * result =  new vector<pair<unsigned , unsigned > >();
+    //cout<<"Thread Starting to match\n";
+    while(matches != NULL) {
+        result->clear();
+        //sort it
+        //cout<<"Matching"<<p1<<"---"<<p2<<'\n';
+        sort(matches->begin(), matches->end()); //uses a combination of quick sort and other methods to sort
+        unsigned head = 0, tail = 0;
+        unsigned short rem_error = this->corpus->context->max_error;
+        unsigned  maximum_bound = 0;
+        bool ready = false;
+        //now that it is sortet, we through with it
+        for (auto it = matches->begin(); it != matches->end(); ++it) {
+
+
+
+        }
+
+    }
+
+
+
+    /*uint32_t p1;
+    uint32_t p2;
+    vector<pair<unsigned , bool> > * matches;
+    matches = this->getlist(p1,p2);
     vector<pair<unsigned long, unsigned long> > * result =  new vector<pair<unsigned long, unsigned long> >();
     //cout<<"Thread Starting to match\n";
     while(matches != NULL) {
@@ -199,90 +225,11 @@ void Writer::threaded() {
             }
 
 
-            /*     //check if it is a match or just an interest
-                 if(it->second){
-                     //check for overlap with the last one
-                     if(head >= this->corpus->context->slice_idx[it->first].first-1 ) {
-                         //if an overlap add yourself to it. (it will already be on the same chromosome)
-                         head = this->corpus->context->slice_idx[it->first].second;
-
-
-                         //now check to see what happens to the next one. is it your neighbour?
-
-                         //is there a next one
-                         if((it+1) != matches->end()){
-
-                             //is it right beside us in the slice list
-                             if((it+1)->first == it->first+1){ //we maybe right beside each other!!!
-
-                                 if(this->corpus->context->same_chrom(this->corpus->context->slice_idx[it->first].first,this->corpus->context->slice_idx[it->first+1].first)){
-                                     //here we know we are neighbours with the next slice. and we are on the same chromosome
-                                     //we know we are going to be a match right up to a good point, because of the overlap.
-                                     //with no overlap, the conditions still stands. because we are neighbouring chromosomes
-                                     //right next to each other. So we can go on and see what happens next.
-                                     continue;
-                                 }
-                                 else{
-                                     //we are not on the same chromosome so we add ourselves to the result vector
-                                     //via safe add function, then we reset the head and tail and errors for the next one
-                                     this->safeAdd(head,tail,result);
-                                     head = tail = this->corpus->context->slice_idx[it->first+1].first;
-                                     rem_error = this->corpus->context->max_error;
-                                 }
-                             }
-                             else{
-                                 //we have to extend ourselves and just go
-                                 //we know there is a next one, we know it is not our neighbour
-                                 //we try to extend current one and then back-extend the next one
-                                 //we check to see if we share the chromosome with the next one
-                                 if(this->corpus->context->same_chrom(this->corpus->context->slice_idx[it->first].first,this->corpus->context->slice_idx[it->first+1].first)){
-                                     head = this->extend(head,this->corpus->context->slice_idx[it->first+1].second,rem_error);
-                                 }
-                                 this->safeAdd(head,tail,result);
-                                 head = this->corpus->context->slice_idx[(it+1)->first].first;
-                                 if(!this->corpus->context->is_first_slice((it+1)->first)){
-                                     //we can and should extend the next one backwards
-                                     tail = this->back_extend(head,this->corpus->context->slice_idx[(it+1)->first-1].first,rem_error);
-
-                                 }
-                                 else{
-                                     tail = head;
-                                 }
-                                 //we have nothing to do more...
-
-                             }
-                         }
-                         else{
-                             //there is no next one
-                             //we just extend this one and leave it at that.
-                             //we first check to see if we are the last slice
-                             if(!this->corpus->context->is_last_slice(it->first)){
-                                 head = this->extend(head,this->corpus->context->slice_idx[it->first+1].second,rem_error);
-                             }
-                             this->safeAdd(head,tail,result);
-                         }
-
-                     }
-                     else{ // no overlap
-                         cout<<"somthing is wrong\n";
-                     }
-
-                 }//it is not a full match.
-                 else{
-
-                 }
-             }
-
-
-     */
-
-
-
         }
 
         this->output(result, p1, p2);
         matches = this->getlist(p1, p2);
-    }
+    }*/
 }
 
 
@@ -315,6 +262,37 @@ inline unsigned  long Writer::back_extend(unsigned long head, unsigned long boun
             else
                 return i;
         }
+    }
+    return bound;
+}
+
+
+inline unsigned  Writer::shingle_back_extend(unsigned head, unsigned bound, unsigned short error, uint32_t p1,
+                                             uint32_t p2) {
+    while(head > bound){
+        if(this->corpus->dna_hashes[p1][head] != this->corpus->dna_hashes[p2][head]){
+            if(error > 0 )
+                error--;
+            else
+                return head;
+
+        }
+        --head;
+    }
+    return bound;
+
+}
+
+inline unsigned Writer::shingle_extend(unsigned head, unsigned bound, unsigned short error, uint32_t p1, uint32_t p2) {
+    while(head < bound){
+        if(this->corpus->dna_hashes[p1][head] != this->corpus->dna_hashes[p2][head]){
+            if(error > 0 )
+                error--;
+            else
+                return head;
+
+        }
+        ++head;
     }
     return bound;
 }

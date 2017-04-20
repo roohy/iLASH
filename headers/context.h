@@ -33,7 +33,12 @@ public:
     static const unsigned long word_count = 4294967311;
     bool map_flag;
     std::vector<MapData> map_data;
+    std::vector<std::pair<unsigned long , unsigned  long> > shingle_map;
     std::vector<std::pair<unsigned long,unsigned long> > slice_idx;
+    std::vector<std::pair<unsigned ,unsigned > >shingle_idx;
+
+
+    unsigned
     unsigned long slice_count;
     unsigned perm_count;
     std::pair<unsigned long, unsigned long> **perm_matrix;
@@ -58,6 +63,7 @@ public:
 
 
 
+
     Context();
     void read_map(const char* );
     void slice_map(unsigned,unsigned);
@@ -68,7 +74,7 @@ public:
     bool same_chrom(unsigned long &i1, unsigned long &i2);
     bool is_last_slice(unsigned);
     bool is_first_slice(unsigned);
-
+    unsigned shingles_in_slice(unsigned long, unsigned long);
 
 };
 

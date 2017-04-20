@@ -34,6 +34,17 @@ uint32_t Corpus::register_corpus(dnabit * person_dna_data, std::string string_id
     return id;
 }
 
+uint32_t Corpus::register_corpus(uint32_t * person_hash, std::string string_id) {
+    this->dna_lock.lock();
+    uint32_t id = this->person_counter;
+    this->dna_hashes.push_back(person_hash);
+    this->dna_id[id] = string_id;
+    this->person_counter++;
+    this->dna_lock.unlock();
+
+    return id;
+}
+
 void Corpus::add_to_corpus(uint32_t *hash_val, uint32_t id, unsigned slice_num
         , std::unordered_map<uint32_t, unsigned short> * relatives) {
 

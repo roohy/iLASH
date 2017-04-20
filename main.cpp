@@ -61,6 +61,7 @@ RunOptions extractFromFile(char* file_addr){
         }
         else if(option == "match_threshold"){
             optionFile>>runOptions.match_threshold;
+
         }
         else if(option == "step_size"){
             optionFile>>runOptions.step_size;
