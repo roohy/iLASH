@@ -42,6 +42,7 @@ void Experiment::read_bulk(const char *input_addr, const char *output_addr) {
     unsigned max_threads = std::thread::hardware_concurrency();
     cout<<"The number of cores supported by this machine is "<<max_threads<<endl;
     max_threads *= 2;
+//    max_threads = 1;
 
     queue<string *> *linesQ = new queue<string *>();
     mutex *linesLock = new mutex;
@@ -67,9 +68,9 @@ void Experiment::read_bulk(const char *input_addr, const char *output_addr) {
         linesLock->unlock();
         local_str_ptr = new string;
         counter++;
-        if(counter > 1){
+        /*if(counter > 7){
             break;
-        }
+        }*/
     }
 
     cout<<"Read everything from the file."<<endl;

@@ -46,11 +46,14 @@ filereader::filereader(std::string * input_string,Context * context):iss(*input_
 
 uint32_t * filereader::getNextHashed() {
     //cout<<this->head<<"<-->"<<this->ind<<"***"<<this->last<<"^^^"<<this->ind-this->head<<'\n';
-    this->hash_buffer[0] = FNV::fnv1a(&(this->bits[0][head]),(size_t)(this->ind-this->head));
-    this->hash_buffer[1] = FNV::fnv1a(&(this->bits[1][head]),(size_t)(this->ind-this->head));
+    //this->hash_buffer[0] = FNV::fnv1a(&(this->bits[0][head]),(size_t)(this->ind-this->head));
+    //this->hash_buffer[1] = FNV::fnv1a(&(this->bits[1][head]),(size_t)(this->ind-this->head));
+    this->hash_buffer[0] = FNV::fnv1a(&(this->bits[0][this->context->shingle_map[this->shingle_ind].first]),(size_t)(this->context->shingle_map[this->shingle_ind].second-this->context->shingle_map[this->shingle_ind].first));
+    this->hash_buffer[1] = FNV::fnv1a(&(this->bits[1][this->context->shingle_map[this->shingle_ind].first]),(size_t)(this->context->shingle_map[this->shingle_ind].second-this->context->shingle_map[this->shingle_ind].first));
 
     this->dna_hash[0][this->shingle_ind] = this->hash_buffer[0];
     this->dna_hash[1][this->shingle_ind] = this->hash_buffer[1];
+//    cout<<dna_hash[0][this->shingle_ind]<<"---"<<dna_hash[1][this->shingle_ind]<<'\n';
     this->shingle_ind++;
     return this->hash_buffer;
 

@@ -92,6 +92,7 @@ void Writer::output(std::vector<std::pair<unsigned long, unsigned long> > *match
 void Writer::run() {
     cout<<"Starting Writer Threads...\n";
     vector<thread> thread_list;
+//    this->max_thread = 1;
     for(unsigned i = 0 ; i < this->max_thread ; i++){
         thread_list.push_back(thread(thread_caller,this));
     }
@@ -112,12 +113,12 @@ void Writer::threaded() {
     while(matches != NULL) {
         result->clear();
         //sort it
-        //cout<<"Matching"<<p1<<"---"<<p2<<'\n';
+
         sort(matches->begin(), matches->end()); //uses a combination of quick sort and other methods to sort
         unsigned head = 0, tail = 0;
         unsigned short rem_error = 0;//this->corpus->context->max_error; TODO: add rem_error
-        unsigned  maximum_bound = 0;
-        bool ready = false;
+        //unsigned  maximum_bound = 0;
+        //bool ready = false;
         //now that it is sortet, we through with it
         for (auto it = matches->begin(); it != matches->end(); ++it) {
 
@@ -135,35 +136,52 @@ void Writer::threaded() {
                 }
             }// now we have a good tail
             if(it->second ){ //this is for extention of head. When there is a match we just add it as a whole.
+
                 head = this->corpus->context->shingle_idx[it->first].second-1;
             }
             else{
+
+
                 head = this->shingle_extend(head,this->corpus->context->shingle_idx[it->first].second,rem_error,p1,p2); //optimization
+
+
                 while(head < this->corpus->context->shingle_idx[it->first].second){
+
                     if(head > tail)
-                        this->safeAdd(head-1,tail,result);
+                        this->shingleSafeAdd(head-1,tail,result);
                     head = tail = head+1;
 
                     head = this->shingle_extend(head,this->corpus->context->shingle_idx[it->first].second,rem_error,p1,p2);
 
                 }
+
                 if(head > tail )
                     head--;
+                else {
+                    head = tail =  this->corpus->context->shingle_idx[it->first].second-1;
+                }
+
             }
             if(it+1 != matches->end()){
+
                 if((it+1)->first != it->first+1){
                         head = this->shingle_extend(head,this->corpus->context->shingle_idx[it->first+1].second,rem_error,p1,p2)-1;
                 }
             }else{
+
                 if(this->corpus->context->is_last_slice(it->first)){
-                    this->safeAdd(head,tail,result);
+
+                    this->shingleSafeAdd(head,tail,result);
+
                 }else{
                     head = this->shingle_extend(head,this->corpus->context->shingle_idx[it->first+1].second,rem_error,p1,p2)-1;
-                    this->safeAdd(head,tail,result);
+                    this->shingleSafeAdd(head,tail,result);
                 }
             }
 
         }
+        this->output(result, p1, p2);
+        matches = this->getlist(p1, p2);
 
     }
 
@@ -274,8 +292,10 @@ void Writer::threaded() {
 
 
 inline void Writer::safeAdd(unsigned long head, unsigned long tail, std::vector<std::pair<unsigned long, unsigned long> > *matches) {
+    cout<<"Safe add called with "<<head<<"---"<<tail<<'\n';
     if(this->corpus->context->map_data[head].gen_dist - this->corpus->context->map_data[tail].gen_dist >= this->corpus->context->minimum_length){
         //cout<<"owww\n";
+
         matches->push_back(make_pair(tail,head));
     }
 }
