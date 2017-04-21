@@ -87,12 +87,11 @@ void Context::slice_map(unsigned slice_size, unsigned step_size) {
         this->shingle_idx.push_back(make_pair(shingle_i,shingle_i+temp_shingle_count));
         shingle_i += temp_shingle_count;
     }
+    cout<<"Done with slicing\n";
 }
 
-void Context::prepare_for_minhash(unsigned perm_count, unsigned shingle_size, unsigned shingle_overlap) {
+void Context::prepare_for_minhash(unsigned perm_count) {
     this->perm_count = perm_count;
-    this->shingle_size = shingle_size;
-    this->shingle_overlap = shingle_overlap;
     /* if(shingle_size%8 != 0){
         this->p_shingle_size = (shingle_size/8)+1;
     }
@@ -144,8 +143,11 @@ void Context::prepare_context(const char *map_addr, unsigned slice_size,unsigned
         ,unsigned shingle_overlap, unsigned bucket_count,double thresh,double match_threshold
         ,double minimum_length, unsigned short max_error) {
     this->read_map(map_addr);
+
+    this->shingle_size = shingle_size;
+    this->shingle_overlap = shingle_overlap;
     this->slice_map(slice_size,step_size);
-    this->prepare_for_minhash(perm_count,shingle_size,shingle_overlap);
+    this->prepare_for_minhash(perm_count);
     this->bucket_count = bucket_count;
     this->bucket_size = perm_count/bucket_count;
     this->threshold = thresh;

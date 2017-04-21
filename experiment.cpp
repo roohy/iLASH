@@ -67,9 +67,9 @@ void Experiment::read_bulk(const char *input_addr, const char *output_addr) {
         linesLock->unlock();
         local_str_ptr = new string;
         counter++;
-        /*if(counter > 10){
+        if(counter > 1){
             break;
-        }*/
+        }
     }
 
     cout<<"Read everything from the file."<<endl;

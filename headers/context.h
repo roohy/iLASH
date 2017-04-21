@@ -38,7 +38,7 @@ public:
     std::vector<std::pair<unsigned ,unsigned > >shingle_idx;
 
 
-    unsigned
+
     unsigned long slice_count;
     unsigned perm_count;
     std::pair<unsigned long, unsigned long> **perm_matrix;
@@ -67,7 +67,7 @@ public:
     Context();
     void read_map(const char* );
     void slice_map(unsigned,unsigned);
-    void prepare_for_minhash(unsigned ,unsigned, unsigned);
+    void prepare_for_minhash(unsigned );
     void prepare_context(const char *,unsigned,unsigned ,unsigned ,unsigned ,unsigned ,unsigned ,double,double,double,
                          unsigned short);
     void approximate();

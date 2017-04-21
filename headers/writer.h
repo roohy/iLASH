@@ -33,6 +33,7 @@ public:
 
     void threaded();
     inline void safeAdd(unsigned long, unsigned long,std::vector<std::pair<unsigned long, unsigned long> > *);
+    inline void shingleSafeAdd(unsigned, unsigned ,std::vector<std::pair<unsigned long, unsigned long> > *);
 
     std::vector<std::pair<unsigned , bool> > * getlist(uint32_t &,uint32_t &);
 

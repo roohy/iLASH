@@ -51,6 +51,7 @@ uint32_t * filereader::getNextHashed() {
 
     this->dna_hash[0][this->shingle_ind] = this->hash_buffer[0];
     this->dna_hash[1][this->shingle_ind] = this->hash_buffer[1];
+    this->shingle_ind++;
     return this->hash_buffer;
 
 }

@@ -107,7 +107,7 @@ void Writer::threaded() {
     uint32_t p2;
     vector<pair<unsigned , bool> > * matches;
     matches = this->getlist(p1,p2);
-    vector<pair<unsigned , unsigned > > * result =  new vector<pair<unsigned , unsigned > >();
+    vector<pair<unsigned long, unsigned long> > * result =  new vector<pair<unsigned long, unsigned long> >();
     //cout<<"Thread Starting to match\n";
     while(matches != NULL) {
         result->clear();
@@ -115,13 +115,53 @@ void Writer::threaded() {
         //cout<<"Matching"<<p1<<"---"<<p2<<'\n';
         sort(matches->begin(), matches->end()); //uses a combination of quick sort and other methods to sort
         unsigned head = 0, tail = 0;
-        unsigned short rem_error = this->corpus->context->max_error;
+        unsigned short rem_error = 0;//this->corpus->context->max_error; TODO: add rem_error
         unsigned  maximum_bound = 0;
         bool ready = false;
         //now that it is sortet, we through with it
         for (auto it = matches->begin(); it != matches->end(); ++it) {
 
+            //we have to see first where the last head is compared to our position
+            if(head < this->corpus->context->shingle_idx[it->first].first-1){ //this means we are not ready for this part. or we are just begining to work or something.
+                this->shingleSafeAdd(head,tail,result); //adding the results of the past iterations (TODO: bug for shingles bigger than min match length)
+                if(this->corpus->context->is_first_slice(it->first)){ //if we are the first slice we just use the slice as the tail
+                   head = tail =  this->corpus->context->shingle_idx[it->first].first;
 
+                }
+                else{ //if not the first slice we can back extend
+
+                    tail = this->shingle_back_extend(this->corpus->context->shingle_idx[it->first].first,head,rem_error,p1,p2)+1;
+                    head = this->corpus->context->shingle_idx[it->first].first;
+                }
+            }// now we have a good tail
+            if(it->second ){ //this is for extention of head. When there is a match we just add it as a whole.
+                head = this->corpus->context->shingle_idx[it->first].second-1;
+            }
+            else{
+                head = this->shingle_extend(head,this->corpus->context->shingle_idx[it->first].second,rem_error,p1,p2); //optimization
+                while(head < this->corpus->context->shingle_idx[it->first].second){
+                    if(head > tail)
+                        this->safeAdd(head-1,tail,result);
+                    head = tail = head+1;
+
+                    head = this->shingle_extend(head,this->corpus->context->shingle_idx[it->first].second,rem_error,p1,p2);
+
+                }
+                if(head > tail )
+                    head--;
+            }
+            if(it+1 != matches->end()){
+                if((it+1)->first != it->first+1){
+                        head = this->shingle_extend(head,this->corpus->context->shingle_idx[it->first+1].second,rem_error,p1,p2)-1;
+                }
+            }else{
+                if(this->corpus->context->is_last_slice(it->first)){
+                    this->safeAdd(head,tail,result);
+                }else{
+                    head = this->shingle_extend(head,this->corpus->context->shingle_idx[it->first+1].second,rem_error,p1,p2)-1;
+                    this->safeAdd(head,tail,result);
+                }
+            }
 
         }
 
@@ -237,6 +277,13 @@ inline void Writer::safeAdd(unsigned long head, unsigned long tail, std::vector<
     if(this->corpus->context->map_data[head].gen_dist - this->corpus->context->map_data[tail].gen_dist >= this->corpus->context->minimum_length){
         //cout<<"owww\n";
         matches->push_back(make_pair(tail,head));
+    }
+}
+
+inline void Writer::shingleSafeAdd(unsigned head, unsigned tail, std::vector<std::pair<unsigned long, unsigned long> > *matches) {
+    if(this->corpus->context->map_data[this->corpus->context->shingle_map[head].second-1].gen_dist - this->corpus->context->map_data[this->corpus->context->shingle_map[tail].first].gen_dist >= this->corpus->context->minimum_length){
+        //cout<<"owww\n";
+        matches->push_back(make_pair(this->corpus->context->shingle_map[tail].first,this->corpus->context->shingle_map[head].second-1));
     }
 }
 
