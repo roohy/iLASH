@@ -7,7 +7,7 @@ slice_size 1000
 
 step_size 1000
 
-perm_count 16
+perm_count 12
 
 shingle_size 20
 
@@ -19,7 +19,7 @@ max_thread 20
 
 match_threshold 0.99
 
-interest_threshold 0.65
+interest_threshold 0.70
 
 max_error 0
 

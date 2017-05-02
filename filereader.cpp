@@ -97,9 +97,9 @@ void filereader::set_slice(unsigned slice_id) {
 
 }
 filereader::~filereader() {
-    //delete this->bits[0];
-    //delete this->bits[1];
-    //delete this->bits;
+    delete this->bits[0];
+    delete this->bits[1];
+    delete this->bits;
 
     delete this->hash_buffer;
 }
