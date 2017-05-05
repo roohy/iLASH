@@ -37,7 +37,7 @@ filereader::filereader(std::string * input_string,Context * context):iss(*input_
         this->iss>>this->bits[1][i];
         //cout<<this->bits[0][i]<<"-"<<this->bits[1][i]<<" "; Prints bits :D
     }
-
+    delete input_string;
 //    cout<<"reader ready"<<endl; goes to the new line after printing the bits :D
 
 }
