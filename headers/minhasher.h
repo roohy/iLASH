@@ -20,6 +20,7 @@ public:
 
 
     Minhasher(Context *);
+    ~Minhasher();
     void insert(uint32_t * );
     void permute(uint32_t , unsigned);
     void set_slice_num(unsigned);

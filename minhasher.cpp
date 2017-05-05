@@ -32,7 +32,15 @@ Minhasher::Minhasher(Context * context) {
 
 }
 
-
+Minhasher::~Minhasher() {
+    delete[] this->corpus;
+    delete[] this->minhashed[0];
+    delete[] this->minhashed[1];
+    delete[] this->minhashed;
+    delete[] this->lsh_mat[0];
+    delete[] this->lsh_mat[1];
+    delete[]this->lsh_mat;
+}
 
 //this function inserts a new hashed shingle into the minhash corpus. If it is the first time it will call permute
 void Minhasher::insert(uint32_t *hashbuffer) {
