@@ -41,10 +41,10 @@ void LSH_Slave::run() {
             this->linesQ->pop();
             this->linesLock->unlock();
 
-            filereader parser(line,this->corpus->context);
-            Minhasher minhash(this->corpus->context);
+            filereader *parser = new filereader(line,this->corpus->context);
+            Minhasher *minhash = new Minhasher(this->corpus->context);
 
-            parser.register_to_experiment(this->corpus);
+            parser->register_to_experiment(this->corpus);
 
             uint32_t * hash_buffer;
             uint32_t ** lsh_buffer;
@@ -53,28 +53,30 @@ void LSH_Slave::run() {
 
             for(unsigned i = 0; i < this->corpus->context->slice_idx.size(); i++){
 
-                parser.set_slice(i);
-                minhash.set_slice_num(i);
+                parser->set_slice(i);
+                minhash->set_slice_num(i);
                 //int counter = 0;
 
                 //first, we parse
-                while(parser.hasNext()){
+                while(parser->hasNext()){
                     //counter++;
-                    hash_buffer = parser.getNextHashed();
-                    minhash.insert(hash_buffer);
+                    hash_buffer = parser->getNextHashed();
+                    minhash->insert(hash_buffer);
                 }
 
                 //preparing for LSH
-                lsh_buffer = minhash.calculate_lsh();
+                lsh_buffer = minhash->calculate_lsh();
 
                 relatives[0].clear();
                 relatives[1].clear();
 
-                this->corpus_generator(lsh_buffer,relatives,i,parser.ids);
-                this->aggregator(relatives,i,parser.ids);
+                this->corpus_generator(lsh_buffer,relatives,i,parser->ids);
+                this->aggregator(relatives,i,parser->ids);
+
 
             }
-
+            delete parser;
+            delete minhash;
         }
     }
 
