@@ -1,0 +1,22 @@
+slice_size 800
+
+step_size 800
+
+perm_count 12
+
+shingle_size 20
+
+shingle_overlap 0
+
+bucket_count 4
+
+max_thread 20
+
+match_threshold 0.99
+
+interest_threshold 0.70
+
+max_error 0
+
+min_length 3
+
