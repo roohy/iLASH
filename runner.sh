@@ -20,7 +20,7 @@ do
 test_addr="$TEST_INPUT_PRE$i"
 echo $test_addr
 cat $TEST_TEMPALTE > $test_addr
-echo "\nmap $INPUT_PRE$i$INPUT_SUF_MAP" >> $test_addr
+echo "map $INPUT_PRE$i$INPUT_SUF_MAP" >> $test_addr
 echo "ped $INPUT_PRE$i$INPUT_SUF_PED" >> $test_addr
 echo "output $OUTPUT_BASE$i" >> $test_addr
 time $EXEC $test_addr > $LOG_BASE$i

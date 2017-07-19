@@ -110,7 +110,7 @@ void filereader::register_to_experiment(Corpus * corpus) {
 //    this->ids[1] = corpus->register_corpus(this->bits[1],this->meta[1]+"_1");
 
 
-    this->ids[0] = corpus->register_corpus(this->dna_hash[0],this->meta[1]+"_0");
-    this->ids[1] = corpus->register_corpus(this->dna_hash[1],this->meta[1]+"_1");
+    this->ids[0] = corpus->register_corpus(this->dna_hash[0],this->meta[0]+"\t"+this->meta[1]+"_0");
+    this->ids[1] = corpus->register_corpus(this->dna_hash[1],this->meta[0]+"\t"+this->meta[1]+"_1");
 
 }
