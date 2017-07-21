@@ -78,6 +78,7 @@ void Writer::output(std::vector<std::pair<unsigned long, unsigned long> > *match
     this->printLock.lock();
     for(auto it=matches->begin(); it != matches->end(); ++it){
         this->output_file<<this->corpus->dna_id[p1]<<'\t'<<this->corpus->dna_id[p2]<<'\t'
+                         <<this->corpus->context->map_data[it->first].chrome<<'\t'
                          <<this->corpus->context->map_data[it->first].position
                          <<'\t'<<this->corpus->context->map_data[it->second].position
                          <<'\t'<<this->corpus->context->map_data[it->first].RSID<<'\t'
