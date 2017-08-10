@@ -68,7 +68,7 @@ void Experiment::read_bulk(const char *input_addr, const char *output_addr) {
         linesLock->unlock();
         local_str_ptr = new string;
         counter++;
-        /*if(counter > 7){
+        /*if(counter > 5){
             break;
         }*/
     }
@@ -98,6 +98,7 @@ void Experiment::read_bulk(const char *input_addr, const char *output_addr) {
 void Experiment::write_to_file(const char *output_addr) {
     unsigned max_threads = std::thread::hardware_concurrency();
     max_threads *= 2;
+//    max_threads = 1;
     Writer writer(output_addr,max_threads,&(this->corpus));
     writer.run();
     writer.end_file();

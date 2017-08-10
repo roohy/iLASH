@@ -73,21 +73,44 @@ vector<pair<unsigned ,bool> > * Writer::getlist(uint32_t & p1, uint32_t &p2) {
 }
 
 
-void Writer::output(std::vector<std::pair<unsigned long, unsigned long> > *matches, uint32_t p1, uint32_t p2) {
+void Writer::output(std::vector<std::pair<unsigned , unsigned > > *matches, uint32_t p1, uint32_t p2) {
 
-    this->printLock.lock();
+    double jaccard;
+    unsigned long head;
+    unsigned long tail;
+
     for(auto it=matches->begin(); it != matches->end(); ++it){
+        jaccard = this->similarity(p1,p2, it->first, it->second);
+        head = this->corpus->context->shingle_map[it->second].second-1;
+        tail = this->corpus->context->shingle_map[it->first].first;
+        this->printLock.lock();
         this->output_file<<this->corpus->dna_id[p1]<<'\t'<<this->corpus->dna_id[p2]<<'\t'
-                         <<this->corpus->context->map_data[it->first].chrome<<'\t'
-                         <<this->corpus->context->map_data[it->first].position
-                         <<'\t'<<this->corpus->context->map_data[it->second].position
-                         <<'\t'<<this->corpus->context->map_data[it->first].RSID<<'\t'
-                         <<this->corpus->context->map_data[it->second].RSID<<'\t'
-                         <<this->corpus->context->map_data[it->second].gen_dist
-                         -this->corpus->context->map_data[it->first].gen_dist<<"cM"<<'\n';
+                         <<this->corpus->context->map_data[tail].chrome<<'\t'
+                         <<this->corpus->context->map_data[tail].position
+                         <<'\t'<<this->corpus->context->map_data[head].position
+                         <<'\t'<<this->corpus->context->map_data[tail].RSID<<'\t'
+                         <<this->corpus->context->map_data[head].RSID<<'\t'
+                         <<this->corpus->context->map_data[head].gen_dist
+                         -this->corpus->context->map_data[tail].gen_dist<<'\t'
+                         <<jaccard<<'\n';
+        this->printLock.unlock();
     }
 
-    this->printLock.unlock();
+
+}
+
+inline double Writer::similarity(uint32_t p1, uint32_t p2, unsigned  st, unsigned  end){
+    unsigned count= 0;
+    unsigned correct = 0;
+    for( unsigned long i = st; i < end; i++){
+        count++;
+        if(this->corpus->dna_hashes[p1][i] == this->corpus->dna_hashes[p2][i])
+            correct++;
+
+
+    }
+
+    return ((double)correct)/((double)count);
 }
 
 void Writer::run() {
@@ -109,7 +132,7 @@ void Writer::threaded() {
     uint32_t p2;
     vector<pair<unsigned , bool> > * matches;
     matches = this->getlist(p1,p2);
-    vector<pair<unsigned long, unsigned long> > * result =  new vector<pair<unsigned long, unsigned long> >();
+    vector<pair<unsigned , unsigned > > * result =  new vector<pair<unsigned , unsigned > >();
     //cout<<"Thread Starting to match\n";
     while(matches != NULL) {
         result->clear();
@@ -292,19 +315,19 @@ void Writer::threaded() {
 }
 
 
-inline void Writer::safeAdd(unsigned long head, unsigned long tail, std::vector<std::pair<unsigned long, unsigned long> > *matches) {
+/*inline void Writer::safeAdd(unsigned long head, unsigned long tail, std::vector<std::pair<unsigned long, unsigned long> > *matches) {
     cout<<"Safe add called with "<<head<<"---"<<tail<<'\n';
     if(this->corpus->context->map_data[head].gen_dist - this->corpus->context->map_data[tail].gen_dist >= this->corpus->context->minimum_length){
         //cout<<"owww\n";
 
         matches->push_back(make_pair(tail,head));
     }
-}
+}*/
 
-inline void Writer::shingleSafeAdd(unsigned head, unsigned tail, std::vector<std::pair<unsigned long, unsigned long> > *matches) {
+inline void Writer::shingleSafeAdd(unsigned head, unsigned tail, std::vector<std::pair<unsigned , unsigned > > *matches) {
     if(this->corpus->context->map_data[this->corpus->context->shingle_map[head].second-1].gen_dist - this->corpus->context->map_data[this->corpus->context->shingle_map[tail].first].gen_dist >= this->corpus->context->minimum_length){
         //cout<<"owww\n";
-        matches->push_back(make_pair(this->corpus->context->shingle_map[tail].first,this->corpus->context->shingle_map[head].second-1));
+        matches->push_back(make_pair(tail,head));
     }
 }
 
