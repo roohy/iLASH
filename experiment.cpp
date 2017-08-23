@@ -88,6 +88,7 @@ void Experiment::read_bulk(const char *input_addr, const char *output_addr) {
     for(unsigned i = 0 ; i < lsh_thread_list.size();i++){
         lsh_thread_list[i].join();
     }
+
     cout<<"Writing\n";
     cout<<"---"<<this->corpus.agg_ptr->size()<<"\n";
     this->write_to_file(output_addr);

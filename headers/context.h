@@ -17,10 +17,10 @@ typedef uint8_t dnabit;
 
 class MapData{
 public:
-    std::string chrome;
-    std::string RSID;
-    double gen_dist;
-    unsigned position;
+    std::string chrome; //chr number
+    std::string RSID; //SNP IS
+    double gen_dist;//Distance from the base in cM
+    unsigned position;//Position in the sequence
     MapData(std::string,std::string,double,unsigned);
 
 
@@ -30,17 +30,20 @@ public:
 
 class Context{
 public:
-    static const unsigned long word_count = 4294967311;
-    bool map_flag;
-    std::vector<MapData> map_data;
-    std::vector<std::pair<unsigned long , unsigned  long> > shingle_map;
-    std::vector<std::pair<unsigned long,unsigned long> > slice_idx;
-    std::vector<std::pair<unsigned ,unsigned > >shingle_idx;
+    static const unsigned long word_count = 4294967311; //we use this prime number to approximate the maximum number of words
+    //The maximum number of words for 30 SNPs long shingle is way less than this. This will also help us to reduce the number of
+    //false positives. Because diving the results of our permutation over a prime number big enough, will generate a near random
+    // number.
+    bool map_flag; //Don't know what is this. :D
+    std::vector<MapData> map_data; //Vector for map data read from MAP file
+    std::vector<std::pair<unsigned long , unsigned  long> > shingle_map; //Map that shows where each shingle starts and ends (index on SNPs list)
+    std::vector<std::pair<unsigned long,unsigned long> > slice_idx; //Map that shows where each slice starts and ends(index on SNPs list)
+    std::vector<std::pair<unsigned ,unsigned > >shingle_idx; // Map that shows on which shingles a slice starts and ends (index on shingles)
 
 
 
-    unsigned long slice_count;
-    unsigned perm_count;
+    unsigned long slice_count; //number of slices
+    unsigned perm_count; //Number of permutations
     std::pair<unsigned long, unsigned long> **perm_matrix;
     unsigned shingle_size;
     unsigned bucket_count;

@@ -72,11 +72,41 @@ void Corpus::add_to_corpus(uint32_t *hash_val, uint32_t id, unsigned slice_num
 
 void Corpus::integrate(std::unordered_map<uint32_t, unsigned short> *relatives, uint32_t id, unsigned slice_number) {
     this->agg_poiter.lock();
-    uint32_t mini;
-    uint32_t maxi;
+    //uint32_t mini;
+    //uint32_t maxi;
+    bool foundflag;
     for(auto it = relatives->begin(); it!=relatives->end(); ++it){
+        foundflag = false;
         if(it->second >= this->context->minimum_interest){
-            mini = min(id,it->first);
+            if(this->agg_ptr->find(id) != this->agg_ptr->end()){
+                if(this->agg_ptr[0][id].find(it->first) != this->agg_ptr[0][id].end()){
+                    foundflag = true;
+                    this->agg_ptr[0][id][it->first].push_back(make_pair(slice_number,(it->second >= this->context->minimum_match)));
+                }
+                else if(this->agg_ptr->find(it->first) == this->agg_ptr->end()){
+                    foundflag = true;
+                    this->agg_ptr[0][id][it->first] = vector<pair<unsigned,bool> >();
+                    this->agg_ptr[0][id][it->first].push_back(make_pair(slice_number,(it->second >= this->context->minimum_match)));
+                }
+            }
+            if(!foundflag){
+                if(this->agg_ptr->find(it->first) != this->agg_ptr->end()){
+                    if(this->agg_ptr[0][it->first].find(id) != this->agg_ptr[0][it->first].end()){
+                        this->agg_ptr[0][it->first][id].push_back(make_pair(slice_number,(it->second >= this->context->minimum_match)));
+                    }else{
+                        this->agg_ptr[0][it->first][id] = vector<pair<unsigned,bool> >();
+                        this->agg_ptr[0][it->first][id].push_back(make_pair(slice_number,(it->second >= this->context->minimum_match)));
+                    }
+                }
+                else{
+                    this->agg_ptr[0][id] = unordered_map<uint32_t ,vector<pair<unsigned, bool> > >();
+                    this->agg_ptr[0][id][it->first] = vector<pair<unsigned,bool> >();
+                    this->agg_ptr[0][id][it->first].push_back(make_pair(slice_number,(it->second >= this->context->minimum_match)));
+                }
+            }
+
+
+            /*mini = min(id,it->first);
             maxi = max(id,it->first);
             if(this->agg_ptr->find(mini) == this->agg_ptr->end()){
                 this->agg_ptr[0][mini] = unordered_map<uint32_t ,vector<pair<unsigned,bool> > >();
@@ -92,7 +122,7 @@ void Corpus::integrate(std::unordered_map<uint32_t, unsigned short> *relatives, 
                 else{
                     this->agg_ptr[0][mini][maxi].push_back(make_pair(slice_number,(it->second >= this->context->minimum_match)));
                 }
-            }
+            }*/
         }
     }
 

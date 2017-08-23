@@ -6,6 +6,7 @@
 
 using namespace std;
 
+//This class stores encapsulates the run configurations for I-Lash experiment to start,given by the user.
 class RunOptions{
 public:
     string map_addr;
@@ -14,18 +15,18 @@ public:
     unsigned perm_count;
     unsigned shingle_size;
     unsigned bucket_count;
-    unsigned max_thread;
+    unsigned max_thread; //doesn't work
     string  out_addr;
     double interest_threshold;
     double match_threshold;
-    unsigned short max_error;
+    unsigned short max_error; //doesn't work
     unsigned step_size;
     unsigned shingle_overlap;
     double minimum_length;
 
 };
 
-RunOptions extractFromFile(char* file_addr){
+RunOptions extractFromFile(char* file_addr){ //populates a runOptions instance from a file. given the address.
     RunOptions runOptions;
     fstream optionFile(file_addr,ifstream::in);
     string option;
