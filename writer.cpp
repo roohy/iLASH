@@ -21,9 +21,9 @@ Writer::Writer(const char * output_addr, unsigned max_thread, Corpus * corpus):o
     this->corpus = corpus;
 
 
-    this->bit = this->corpus->agg_ptr->begin();
-    this->lit = this->bit->second.begin();
-
+//    this->bit = this->corpus->agg_ptr->begin();
+//    this->lit = this->bit->second.begin();
+    this->iter = this->corpus->agg_ptr->begin();
 }
 
 void Writer::end_file() {
@@ -33,11 +33,23 @@ void Writer::end_file() {
 
 vector<pair<unsigned ,bool> > * Writer::getlist(uint32_t & p1, uint32_t &p2) {
 
-    typename std::unordered_map<uint32_t, std::unordered_map<uint32_t ,std::vector<std::pair<unsigned ,bool> > > >::iterator temp_bit;
-    typename std::unordered_map<uint32_t, std::vector<std::pair<unsigned ,bool> > >::iterator temp_lit;
+//    typename std::unordered_map<uint32_t, std::unordered_map<uint32_t ,std::vector<std::pair<unsigned ,bool> > > >::iterator temp_bit;
+//    typename std::unordered_map<uint32_t, std::vector<std::pair<unsigned ,bool> > >::iterator temp_lit;
+    typename std::unordered_map<uint64_t,std::vector<std::pair<unsigned ,bool> > >::iterator temp_it;
     this->jobLock.lock();
-
-    if(this->bit != this->corpus->agg_ptr->end()){
+    if(this->iter != this->corpus->agg_ptr->end()){
+        temp_it = this->iter;
+        this->iter++;
+        this->jobLock.unlock();
+        p2 = (uint32_t)(temp_it->first & 0xFFFFFFFFLL);
+        p1 = (uint32_t)((temp_it->first & 0xFFFFFFFF00000000LL) >> 32);
+        return &(temp_it->second);
+    }
+    else{
+        this->jobLock.unlock();
+        return NULL;
+    }
+    /*if(this->bit != this->corpus->agg_ptr->end()){
 
         if(this->lit != this->bit->second.end()){
             temp_lit = this->lit;
@@ -66,7 +78,7 @@ vector<pair<unsigned ,bool> > * Writer::getlist(uint32_t & p1, uint32_t &p2) {
     else{
         this->jobLock.unlock();
         return NULL;
-    }
+    }*/
 
     this->jobLock.unlock();
     return NULL;

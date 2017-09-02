@@ -18,18 +18,18 @@
 
 
 
-class Experiment{
+class Experiment{ //A run of I-Lash is an experiment
 
 public:
     Context context;
 
     Corpus corpus;
 
-    void set_context(Context );
+    void set_context(Context ); //sets up context
     void setup_context(const char*,unsigned ,unsigned ,unsigned ,unsigned ,unsigned ,unsigned ,double,double,double,
-                       unsigned short);
+                       unsigned short); //sets up context from main function
 
-    void read_bulk(const char*,const char*);
+    void read_bulk(const char*,const char*); //for now will only read in bulk
     //void read_bulk_single(const char*,const char*);
 
     void write_to_file(const char * );

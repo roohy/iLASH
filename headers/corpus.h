@@ -15,8 +15,8 @@ public:
     std::unordered_map<uint32_t,std::vector<uint32_t > > **LSH_MAT;
 
     std::mutex agg_poiter;
-    std::unordered_map<uint32_t,std::unordered_map<uint32_t, std::vector<std::pair<unsigned,bool> > > > * agg_ptr;
-
+//    std::unordered_map<uint32_t,std::unordered_map<uint32_t, std::vector<std::pair<unsigned,bool> > > > * agg_ptr;
+    std::unordered_map<uint64_t,std::vector<std::pair<unsigned,bool> > > * agg_ptr;
 
     std::mutex dna_lock;
     std::vector<dnabit *> dna_data;
