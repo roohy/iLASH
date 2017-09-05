@@ -35,7 +35,7 @@ vector<pair<unsigned ,bool> > * Writer::getlist(uint32_t & p1, uint32_t &p2) {
 
 //    typename std::unordered_map<uint32_t, std::unordered_map<uint32_t ,std::vector<std::pair<unsigned ,bool> > > >::iterator temp_bit;
 //    typename std::unordered_map<uint32_t, std::vector<std::pair<unsigned ,bool> > >::iterator temp_lit;
-    typename std::unordered_map<uint64_t,std::vector<std::pair<unsigned ,bool> > >::iterator temp_it;
+    typename std::map<uint64_t,std::vector<std::pair<unsigned ,bool> > >::iterator temp_it;
     this->jobLock.lock();
     if(this->iter != this->corpus->agg_ptr->end()){
         temp_it = this->iter;

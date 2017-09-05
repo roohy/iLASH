@@ -11,7 +11,7 @@
 #include <vector>
 #include <map>
 #include <fstream>
-#include <unordered_map>
+#include <map>
 #include <thread>
 #include "headers/lsh_slave.h"
 #include <iostream>
@@ -48,7 +48,7 @@ void LSH_Slave::run() {
 
             uint32_t * hash_buffer;
             uint32_t ** lsh_buffer;
-            std::unordered_map<uint32_t ,unsigned short> relatives[2];
+            std::map<uint32_t ,unsigned short> relatives[2];
 
 
             for(unsigned i = 0; i < this->corpus->context->slice_idx.size(); i++){
@@ -82,7 +82,7 @@ void LSH_Slave::run() {
 
 }
 
-inline void LSH_Slave::corpus_generator(uint32_t **lsh_matrix, std::unordered_map<uint32_t, unsigned short> * relatives, unsigned slice_num, uint32_t *ids) {
+inline void LSH_Slave::corpus_generator(uint32_t **lsh_matrix, std::map<uint32_t, unsigned short> * relatives, unsigned slice_num, uint32_t *ids) {
 
     for(int i = 0 ; i < 2 ; i++){
         this->corpus->add_to_corpus(lsh_matrix[i],ids[i],slice_num,relatives+i);
@@ -90,7 +90,7 @@ inline void LSH_Slave::corpus_generator(uint32_t **lsh_matrix, std::unordered_ma
 
 }
 
-inline void LSH_Slave::aggregator(std::unordered_map<uint32_t, unsigned short> * relatives, unsigned slice_num, uint32_t * ids) {
+inline void LSH_Slave::aggregator(std::map<uint32_t, unsigned short> * relatives, unsigned slice_num, uint32_t * ids) {
     for(int i = 0 ; i < 2; i++){
         this->corpus->integrate(relatives+i,ids[i],slice_num);
     }

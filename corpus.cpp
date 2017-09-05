@@ -7,7 +7,7 @@
 #include <iostream>
 #include <vector>
 #include <mutex>
-#include <unordered_map>
+#include <map>
 
 using namespace std;
 uint64_t inline make_key(uint32_t id1,uint32_t id2){
@@ -16,14 +16,14 @@ uint64_t inline make_key(uint32_t id1,uint32_t id2){
 void Corpus::initializer(Context *context) {
     this->context = context;
     this->person_counter = 0;
-    this->LSH_MAT = new unordered_map<uint32_t, vector<uint32_t > > *[this->context->slice_count];
+    this->LSH_MAT = new map<uint32_t, vector<uint32_t > > *[this->context->slice_count];
     this->LSH_Lock = new mutex[this->context->slice_size];
     for(unsigned i = 0 ; i < this->context->slice_count; i++){
-        this->LSH_MAT[i] = new unordered_map<uint32_t ,vector<uint32_t> >[this->context->bucket_count];
+        this->LSH_MAT[i] = new map<uint32_t ,vector<uint32_t> >[this->context->bucket_count];
     }
-    this->agg_ptr = new std::unordered_map<uint64_t , vector<pair<unsigned,bool> >  >();
+    this->agg_ptr = new std::map<uint64_t , vector<pair<unsigned,bool> >  >();
 //    this->agg_ptr
-//            = new std::unordered_map<uint32_t ,unordered_map<uint32_t , vector<pair<unsigned,bool> > > >();
+//            = new std::map<uint32_t ,unordered_map<uint32_t , vector<pair<unsigned,bool> > > >();
 }
 
 uint32_t Corpus::register_corpus(dnabit * person_dna_data, std::string string_id) {
@@ -49,7 +49,7 @@ uint32_t Corpus::register_corpus(uint32_t * person_hash, std::string string_id) 
 }
 
 void Corpus::add_to_corpus(uint32_t *hash_val, uint32_t id, unsigned slice_num
-        , std::unordered_map<uint32_t, unsigned short> * relatives) {
+        , std::map<uint32_t, unsigned short> * relatives) {
 
     this->LSH_Lock[slice_num].lock();
     for(unsigned k = 0 ; k < this->context->bucket_count; k++){
@@ -73,7 +73,7 @@ void Corpus::add_to_corpus(uint32_t *hash_val, uint32_t id, unsigned slice_num
 
 }
 
-void Corpus::integrate(std::unordered_map<uint32_t, unsigned short> *relatives, uint32_t id, unsigned slice_number) {
+void Corpus::integrate(std::map<uint32_t, unsigned short> *relatives, uint32_t id, unsigned slice_number) {
     this->agg_poiter.lock();
     uint32_t mini;
     uint32_t maxi;

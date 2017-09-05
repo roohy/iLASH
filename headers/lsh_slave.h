@@ -16,7 +16,7 @@
 #include <vector>
 #include <map>
 #include <fstream>
-#include <unordered_map>
+#include <map>
 
 
 
@@ -28,8 +28,8 @@ class LSH_Slave{
 public:
     LSH_Slave(Corpus *,std::mutex *,std::queue<std::string*> * ,bool *);
     void run();
-    inline void corpus_generator( uint32_t ** , std::unordered_map<uint32_t,unsigned short> *, unsigned ,uint32_t *);
-    inline void aggregator(std::unordered_map<uint32_t,unsigned short> *, unsigned ,uint32_t *);
+    inline void corpus_generator( uint32_t ** , std::map<uint32_t,unsigned short> *, unsigned ,uint32_t *);
+    inline void aggregator(std::map<uint32_t,unsigned short> *, unsigned ,uint32_t *);
 };
 
 #endif //IBD_LSH_SLAVE_H

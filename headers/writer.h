@@ -57,7 +57,7 @@ public:
     std::mutex jobLock;
 //    typename std::unordered_map<uint32_t, std::unordered_map<uint32_t ,std::vector<std::pair<unsigned ,bool> > > >::iterator bit;
 //    typename std::unordered_map<uint32_t, std::vector<std::pair<unsigned ,bool> > >::iterator lit;
-    typename std::unordered_map<uint64_t, std::vector<std::pair<unsigned ,bool> > >::iterator iter;
+    typename std::map<uint64_t, std::vector<std::pair<unsigned ,bool> > >::iterator iter;
 
 };
 #endif //IBD_WRITER_H
