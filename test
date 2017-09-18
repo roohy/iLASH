@@ -25,4 +25,6 @@ max_error 0
 
 min_length 3
 
+auto_slice 1
+
 output out

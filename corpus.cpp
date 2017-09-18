@@ -17,7 +17,7 @@ void Corpus::initializer(Context *context) {
     this->context = context;
     this->person_counter = 0;
     this->LSH_MAT = new unordered_map<uint32_t, vector<uint32_t > > *[this->context->slice_count];
-    this->LSH_Lock = new mutex[this->context->slice_size];
+    this->LSH_Lock = new mutex[this->context->slice_count];
     for(unsigned i = 0 ; i < this->context->slice_count; i++){
         this->LSH_MAT[i] = new unordered_map<uint32_t ,vector<uint32_t> >[this->context->bucket_count];
     }

@@ -58,6 +58,7 @@ public:
     double match_thresh;
     double minimum_length;
     unsigned short max_error;
+    bool auto_slice;
 
 
 
@@ -69,10 +70,11 @@ public:
 
     Context();
     void read_map(const char* );
+    void auto_slice_map( double);
     void slice_map(unsigned,unsigned);
     void prepare_for_minhash(unsigned );
     void prepare_context(const char *,unsigned,unsigned ,unsigned ,unsigned ,unsigned ,unsigned ,double,double,double,
-                         unsigned short);
+                         unsigned short,bool);
     void approximate();
     bool same_chrom(unsigned long &i1, unsigned long &i2);
     bool is_last_slice(unsigned);

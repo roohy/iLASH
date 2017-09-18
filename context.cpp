@@ -49,6 +49,49 @@ void Context::read_map(const char * map_addr) {
 
 }
 
+void Context::auto_slice_map(double min_length) {
+    if(!this->map_flag){
+        cout<<"No Map file is available"<<endl;
+        throw "No Map file read before...";
+    }
+
+    unsigned base = 0,last=0;
+    unsigned shingle_i = 0;
+
+
+    while(last+this->shingle_size < this->map_data.size()){
+        last  = last + this->shingle_size;
+        if(this->map_data[last].chrome != this->map_data[base].chrome){
+            cout<<"we don't support the multiple chromosome runs yet"<<endl;
+            break;
+        }
+        else if(this->map_data[last].gen_dist-this->map_data[base].gen_dist >= min_length){
+            cout<<"SLICE MADE: "<<base<<"-"<<last<<"; Dist: "<<this->map_data[last].gen_dist-this->map_data[base].gen_dist<<endl;
+            this->slice_idx.push_back(make_pair(base,last));
+            base = last;
+
+            continue;
+
+        }
+    }
+    if(base == last){
+        this->slice_idx[this->slice_idx.size()-1].second = this->map_data.size();
+    }else{
+        this->slice_idx.push_back(make_pair(base,this->map_data.size()));
+    }
+    cout<<"Number of slices:"<<this->slice_idx.size()<<'\n';
+    this->slice_count = this->slice_idx.size();
+
+    unsigned temp_shingle_count;
+    for(unsigned k = 0 ; k < this->slice_count ; k++){
+        temp_shingle_count = this->shingles_in_slice(this->slice_idx[k].first,this->slice_idx[k].second);
+        this->shingle_idx.push_back(make_pair(shingle_i,shingle_i+temp_shingle_count));
+        shingle_i += temp_shingle_count;
+    }
+    cout<<"Done with slicing\n";
+
+}
+
 void Context::slice_map(unsigned slice_size, unsigned step_size) {
     if(!this->map_flag){
         cout<<"No Map file is available"<<endl;
@@ -141,12 +184,17 @@ void Context::approximate() {
 
 void Context::prepare_context(const char *map_addr, unsigned slice_size,unsigned step_size, unsigned perm_count, unsigned shingle_size
         ,unsigned shingle_overlap, unsigned bucket_count,double thresh,double match_threshold
-        ,double minimum_length, unsigned short max_error) {
+        ,double minimum_length, unsigned short max_error,bool auto_slice) {
     this->read_map(map_addr);
-
+    this->auto_slice = auto_slice;
     this->shingle_size = shingle_size;
     this->shingle_overlap = shingle_overlap;
-    this->slice_map(slice_size,step_size);
+    if(auto_slice){
+        this->auto_slice_map(minimum_length);
+    }else{
+        this->slice_map(slice_size,step_size);
+    }
+
     this->prepare_for_minhash(perm_count);
     this->bucket_count = bucket_count;
     this->bucket_size = perm_count/bucket_count;
