@@ -24,6 +24,7 @@ public:
     unsigned shingle_overlap;
     double minimum_length;
     bool auto_slice;
+    double cm_overlap;
 
 };
 
@@ -82,6 +83,9 @@ RunOptions extractFromFile(char* file_addr){ //populates a runOptions instance f
             optionFile>>runOptions.auto_slice;
             cout<<"auto_slice"<<runOptions.auto_slice<<endl;
         }
+        else if(option == "cm_overlap"){
+            optionFile>>runOptions.cm_overlap;
+        }
 
     }
     return runOptions;
@@ -93,7 +97,7 @@ int main(int argc, char *argv[]) {
     cout<<"Context from"<<runOptions.map_addr<<endl;
     Experiment xp;
     xp.setup_context(runOptions.map_addr.c_str(),runOptions.slice_size,runOptions.step_size,runOptions.perm_count,runOptions.shingle_size
-            ,runOptions.shingle_overlap,runOptions.bucket_count,runOptions.interest_threshold,runOptions.match_threshold,runOptions.minimum_length,runOptions.max_error,runOptions.auto_slice);
+            ,runOptions.shingle_overlap,runOptions.bucket_count,runOptions.interest_threshold,runOptions.match_threshold,runOptions.minimum_length,runOptions.max_error,runOptions.auto_slice,runOptions.cm_overlap);
     xp.read_bulk(runOptions.ped_addr.c_str(),runOptions.out_addr.c_str());
     //xp.read_bulk_single(runOptions.ped_addr.c_str(),runOptions.out_addr.c_str());
 

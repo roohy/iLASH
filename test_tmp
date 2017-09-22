@@ -1,14 +1,14 @@
-slice_size 800
+slice_size 350
 
-step_size 800
+step_size 175
 
-perm_count 12
+perm_count 20
 
 shingle_size 20
 
 shingle_overlap 0
 
-bucket_count 4
+bucket_count 5
 
 max_thread 20
 
@@ -18,5 +18,8 @@ interest_threshold 0.70
 
 max_error 0
 
-min_length 3
+min_length 2.9
 
+auto_slice 1
+
+cm_overlap 1.4
