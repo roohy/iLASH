@@ -1,11 +1,11 @@
 
-map ./test_files/result
+map ../PAGEII_Chr3.phased.filtered.map
 
-ped ./test_files/test.ped.100m
+ped ../PAGEII_Chr3.phased.filtered.ped
 
-slice_size 1000
+slice_size 350
 
-step_size 1000
+step_size 350
 
 perm_count 12
 
