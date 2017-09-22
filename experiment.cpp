@@ -29,10 +29,10 @@ void Experiment::set_context(Context context) {
 void Experiment::setup_context(const char * map_addr, unsigned slice_size, unsigned step_size
         , unsigned perm_count, unsigned shingle_size
         , unsigned shingle_overlap, unsigned bucket_count
-        ,double threshold,double match_threshold,double minimum_length, unsigned short max_error, bool auto_slice) {
+        ,double threshold,double match_threshold,double minimum_length, unsigned short max_error, bool auto_slice,double cm_overlap) {
 
     this->context.prepare_context(map_addr,slice_size, step_size,perm_count,shingle_size,shingle_overlap
-            ,bucket_count,threshold,match_threshold,minimum_length,max_error,auto_slice);
+            ,bucket_count,threshold,match_threshold,minimum_length,max_error,auto_slice,cm_overlap);
     this->corpus.initializer(&(this->context));
 
 }

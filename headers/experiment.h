@@ -27,7 +27,7 @@ public:
 
     void set_context(Context ); //sets up context
     void setup_context(const char*,unsigned ,unsigned ,unsigned ,unsigned ,unsigned ,unsigned ,double,double,double,
-                       unsigned short,bool); //sets up context from main function
+                       unsigned short,bool,double); //sets up context from main function
 
     void read_bulk(const char*,const char*); //for now will only read in bulk
     //void read_bulk_single(const char*,const char*);

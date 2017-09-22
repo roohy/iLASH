@@ -49,13 +49,14 @@ void Context::read_map(const char * map_addr) {
 
 }
 
-void Context::auto_slice_map(double min_length) {
+void Context::auto_slice_map(double min_length,double cm_overlap) {
     if(!this->map_flag){
         cout<<"No Map file is available"<<endl;
         throw "No Map file read before...";
     }
 
     unsigned base = 0,last=0;
+    unsigned overlap_point=0;
     unsigned shingle_i = 0;
 
 
@@ -68,10 +69,13 @@ void Context::auto_slice_map(double min_length) {
         else if(this->map_data[last].gen_dist-this->map_data[base].gen_dist >= min_length){
             cout<<"SLICE MADE: "<<base<<"-"<<last<<"; Dist: "<<this->map_data[last].gen_dist-this->map_data[base].gen_dist<<endl;
             this->slice_idx.push_back(make_pair(base,last));
-            base = last;
+            base = overlap_point;
 
-            continue;
 
+
+        }
+        if(this->map_data[last].gen_dist-this->map_data[base].gen_dist >= min_length-cm_overlap){
+            overlap_point = last;
         }
     }
     if(base == last){
@@ -184,13 +188,13 @@ void Context::approximate() {
 
 void Context::prepare_context(const char *map_addr, unsigned slice_size,unsigned step_size, unsigned perm_count, unsigned shingle_size
         ,unsigned shingle_overlap, unsigned bucket_count,double thresh,double match_threshold
-        ,double minimum_length, unsigned short max_error,bool auto_slice) {
+        ,double minimum_length, unsigned short max_error,bool auto_slice,double cm_overlap) {
     this->read_map(map_addr);
     this->auto_slice = auto_slice;
     this->shingle_size = shingle_size;
     this->shingle_overlap = shingle_overlap;
     if(auto_slice){
-        this->auto_slice_map(minimum_length);
+        this->auto_slice_map(minimum_length,cm_overlap);
     }else{
         this->slice_map(slice_size,step_size);
     }
