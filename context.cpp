@@ -74,7 +74,7 @@ void Context::auto_slice_map(double min_length,double cm_overlap) {
 
 
         }
-        if(this->map_data[last].gen_dist-this->map_data[base].gen_dist >= min_length-cm_overlap){
+        if(this->map_data[last].gen_dist-this->map_data[base].gen_dist >= min_length-cm_overlap && overlap_point <= base){
             overlap_point = last;
         }
     }
