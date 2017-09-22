@@ -61,7 +61,7 @@ void Context::auto_slice_map(double min_length,double cm_overlap) {
 
 
     while(last+this->shingle_size < this->map_data.size()){
-        last  = last + this->shingle_size;
+        last  = last + 1;
         if(this->map_data[last].chrome != this->map_data[base].chrome){
             cout<<"we don't support the multiple chromosome runs yet"<<endl;
             break;
