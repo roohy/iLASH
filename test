@@ -29,4 +29,6 @@ auto_slice 1
 
 cm_overlap 1.4
 
+minhash_threshold 55
+
 output out

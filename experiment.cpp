@@ -37,6 +37,13 @@ void Experiment::setup_context(const char * map_addr, unsigned slice_size, unsig
 
 }
 
+
+void Experiment::setup_context(RunOptions * runOptions) {
+    this->context.prepare_context(runOptions);
+    this->corpus.initializer(&(this->context));
+
+}
+
 void Experiment::read_bulk(const char *input_addr, const char *output_addr) {
 
     unsigned max_threads = std::thread::hardware_concurrency();

@@ -18,5 +18,11 @@ interest_threshold 0.70
 
 max_error 0
 
-min_length 3
 
+minhash_threshold 50
+
+min_length 2.9
+
+auto_slice 1
+
+cm_overlap 1.4
