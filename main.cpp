@@ -7,10 +7,9 @@
 
 using namespace std;
 
-//This class stores encapsulates the run configurations for I-Lash experiment to start,given by the user.
+//This class stores encapsulates the run configurations for iLASH experiment to start,given by the user.
 
-
-RunOptions extractFromFile(char* file_addr){ //populates a runOptions instance from a file. given the address.
+RunOptions extractFromFile(char* file_addr){ //populates a runOptions instance from a file; given the address.
     RunOptions runOptions;
     fstream optionFile(file_addr,ifstream::in);
     string option;
@@ -76,16 +75,17 @@ RunOptions extractFromFile(char* file_addr){ //populates a runOptions instance f
 }
 
 int main(int argc, char *argv[]) {
-    cout<<"Reading from:"<<argv[1]<<endl;
-    RunOptions runOptions = extractFromFile(argv[1]);
-    cout<<"Context from"<<runOptions.map_addr<<endl;
-    Experiment xp;
-    xp.setup_context(&runOptions);
 
-//    xp.setup_context(runOptions.map_addr.c_str(),runOptions.slice_size,runOptions.step_size,runOptions.perm_count,runOptions.shingle_size
-            //,runOptions.shingle_overlap,runOptions.bucket_count,runOptions.interest_threshold,runOptions.match_threshold,runOptions.minimum_length,runOptions.max_error,runOptions.auto_slice,runOptions.cm_overlap);
+    cout<<"Reading configurations from: "<<argv[1]<<endl;
+    RunOptions runOptions = extractFromFile(argv[1]);
+    cout<<"Map loading from address:"<<runOptions.map_addr<<endl;
+    //Initializing the experiment
+    Experiment xp;
+    //setting up the context of the experiment
+    xp.setup_context(&runOptions);
+    //reading a bulk IBD file
     xp.read_bulk(runOptions.ped_addr.c_str(),runOptions.out_addr.c_str());
-    //xp.read_bulk_single(runOptions.ped_addr.c_str(),runOptions.out_addr.c_str());
+
 
 
 }
