@@ -15,6 +15,30 @@
 
 typedef uint8_t dnabit;
 
+class RunOptions{
+public:
+    std::string map_addr;
+    std::string ped_addr;
+    unsigned slice_size;
+    unsigned perm_count;
+    unsigned shingle_size;
+    unsigned bucket_count;
+    unsigned max_thread; //doesn't work
+    std::string  out_addr;
+    double interest_threshold;
+    double match_threshold;
+    unsigned short max_error; //doesn't work
+    unsigned step_size;
+    unsigned shingle_overlap;
+    double minimum_length;
+    bool auto_slice;
+    double cm_overlap;
+    uint8_t minhash_threshold;
+
+};
+
+
+
 class MapData{
 public:
     std::string chrome; //chr number
@@ -28,6 +52,9 @@ public:
 
 };
 
+
+
+
 class Context{
 public:
     static const unsigned long word_count = 4294967311; //we use this prime number to approximate the maximum number of words
@@ -39,7 +66,8 @@ public:
     std::vector<std::pair<unsigned long , unsigned  long> > shingle_map; //Map that shows where each shingle starts and ends (index on SNPs list)
     std::vector<std::pair<unsigned long,unsigned long> > slice_idx; //Map that shows where each slice starts and ends(index on SNPs list)
     std::vector<std::pair<unsigned ,unsigned > >shingle_idx; // Map that shows on which shingles a slice starts and ends (index on shingles)
-
+//    std::vector<std::pair<bool,bool> >slice_extendable;//show wether we can extend a slice from both sides or not
+    std::vector<bool>minhashable;
 
 
     unsigned long slice_count; //number of slices
@@ -60,7 +88,7 @@ public:
     unsigned short max_error;
     bool auto_slice;
 
-
+    uint8_t minhash_threshold;
 
 
 
@@ -75,6 +103,8 @@ public:
     void prepare_for_minhash(unsigned );
     void prepare_context(const char *,unsigned,unsigned ,unsigned ,unsigned ,unsigned ,unsigned ,double,double,double,
                          unsigned short,bool,double);
+
+    void prepare_context(RunOptions *);
     void approximate();
     bool same_chrom(unsigned long &i1, unsigned long &i2);
     bool is_last_slice(unsigned);

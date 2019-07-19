@@ -3,30 +3,12 @@
 #include <fstream>
 #include <string>
 #include "headers/experiment.h"
+#include "headers/context.h"
 
 using namespace std;
 
 //This class stores encapsulates the run configurations for I-Lash experiment to start,given by the user.
-class RunOptions{
-public:
-    string map_addr;
-    string ped_addr;
-    unsigned slice_size;
-    unsigned perm_count;
-    unsigned shingle_size;
-    unsigned bucket_count;
-    unsigned max_thread; //doesn't work
-    string  out_addr;
-    double interest_threshold;
-    double match_threshold;
-    unsigned short max_error; //doesn't work
-    unsigned step_size;
-    unsigned shingle_overlap;
-    double minimum_length;
-    bool auto_slice;
-    double cm_overlap;
 
-};
 
 RunOptions extractFromFile(char* file_addr){ //populates a runOptions instance from a file. given the address.
     RunOptions runOptions;
@@ -86,7 +68,9 @@ RunOptions extractFromFile(char* file_addr){ //populates a runOptions instance f
         else if(option == "cm_overlap"){
             optionFile>>runOptions.cm_overlap;
         }
-
+        else if(option == "minhash_threshold"){
+            optionFile>>runOptions.minhash_threshold;
+        }
     }
     return runOptions;
 }
@@ -96,8 +80,10 @@ int main(int argc, char *argv[]) {
     RunOptions runOptions = extractFromFile(argv[1]);
     cout<<"Context from"<<runOptions.map_addr<<endl;
     Experiment xp;
-    xp.setup_context(runOptions.map_addr.c_str(),runOptions.slice_size,runOptions.step_size,runOptions.perm_count,runOptions.shingle_size
-            ,runOptions.shingle_overlap,runOptions.bucket_count,runOptions.interest_threshold,runOptions.match_threshold,runOptions.minimum_length,runOptions.max_error,runOptions.auto_slice,runOptions.cm_overlap);
+    xp.setup_context(&runOptions);
+
+//    xp.setup_context(runOptions.map_addr.c_str(),runOptions.slice_size,runOptions.step_size,runOptions.perm_count,runOptions.shingle_size
+            //,runOptions.shingle_overlap,runOptions.bucket_count,runOptions.interest_threshold,runOptions.match_threshold,runOptions.minimum_length,runOptions.max_error,runOptions.auto_slice,runOptions.cm_overlap);
     xp.read_bulk(runOptions.ped_addr.c_str(),runOptions.out_addr.c_str());
     //xp.read_bulk_single(runOptions.ped_addr.c_str(),runOptions.out_addr.c_str());
 

@@ -25,6 +25,7 @@ Context::Context()
         :map_data(),slice_idx() {
     this->map_flag = false;
     this->minimum_match = 0;
+    this->minhash_threshold = 55;
 
 }
 
@@ -90,6 +91,10 @@ void Context::auto_slice_map(double min_length,double cm_overlap) {
     for(unsigned k = 0 ; k < this->slice_count ; k++){
         temp_shingle_count = this->shingles_in_slice(this->slice_idx[k].first,this->slice_idx[k].second);
         this->shingle_idx.push_back(make_pair(shingle_i,shingle_i+temp_shingle_count));
+        if(this->slice_idx[k].second-this->slice_idx[k].first > this->minhash_threshold)
+            this->minhashable.push_back(true);
+        else
+            this->minhashable.push_back(false);
         shingle_i += temp_shingle_count;
     }
     cout<<"Done with slicing\n";
@@ -210,6 +215,33 @@ void Context::prepare_context(const char *map_addr, unsigned slice_size,unsigned
     this->approximate();
 
 }
+void Context::prepare_context(RunOptions * runOptions) {
+    this->read_map(runOptions->map_addr.c_str());
+    this->auto_slice = runOptions->auto_slice;
+    this->shingle_size = runOptions->shingle_size;
+    this->shingle_overlap = runOptions->shingle_overlap;
+    if(auto_slice){
+        this->auto_slice_map(runOptions->minimum_length,runOptions->cm_overlap);
+    }else{
+        this->slice_map(runOptions->slice_size,runOptions->step_size);
+    }
+
+    this->prepare_for_minhash(runOptions->perm_count);
+    this->bucket_count = runOptions->bucket_count;
+    this->bucket_size = runOptions->perm_count/bucket_count;
+    this->threshold = runOptions->interest_threshold;
+
+    this->match_thresh = runOptions->match_threshold;
+
+    this->minimum_length = runOptions->minimum_length;
+    this->max_error = runOptions->max_error;
+
+    this->minhash_threshold = runOptions->minhash_threshold;
+
+    this->approximate();
+
+}
+
 
 bool Context::same_chrom(unsigned long &i1, unsigned long &i2) {
     return (this->map_data[i1].chrome == this->map_data[i2].chrome);

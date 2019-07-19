@@ -1,10 +1,17 @@
+
+ped path/to/ped.ped
+
+map path/to/map.map
+
+output output/path.match
+
 slice_size 350
 
-step_size 175
+step_size 350
 
 perm_count 20
 
-shingle_size 20
+shingle_size 15
 
 shingle_overlap 0
 
@@ -18,11 +25,12 @@ interest_threshold 0.70
 
 max_error 0
 
-
-minhash_threshold 50
-
 min_length 2.9
 
 auto_slice 1
 
-cm_overlap 1.4
+cm_overlap 1
+
+minhash_threshold 55
+
+

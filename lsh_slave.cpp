@@ -58,21 +58,30 @@ void LSH_Slave::run() {
                 //int counter = 0;
 
                 //first, we parse
-                while(parser->hasNext()){
-                    //counter++;
-                    hash_buffer = parser->getNextHashed();
-                    minhash->insert(hash_buffer);
+                if(this->corpus->context->minhashable[i]){
+                    while(parser->hasNext()){
+                        //counter++;
+                        hash_buffer = parser->getNextHashed();
+                        minhash->insert(hash_buffer);
+                    }
+
+                    //preparing for LSH
+                    lsh_buffer = minhash->calculate_lsh();
+
+                    relatives[0].clear();
+                    relatives[1].clear();
+
+                    this->corpus_generator(lsh_buffer,relatives,i,parser->ids);
+                    this->aggregator(relatives,i,parser->ids);
+
+
+                }else{
+                    while(parser->hasNext()){
+                        //counter++;
+                        parser->getNextHashed();
+
+                    }
                 }
-
-                //preparing for LSH
-                lsh_buffer = minhash->calculate_lsh();
-
-                relatives[0].clear();
-                relatives[1].clear();
-
-                this->corpus_generator(lsh_buffer,relatives,i,parser->ids);
-                this->aggregator(relatives,i,parser->ids);
-
 
             }
             delete parser;

@@ -1,19 +1,21 @@
 
-map ../PAGEII_Chr3.phased.filtered.map
+ped ../belbig01/for_jose-luis/PAGEII_Chr22.phased.filtered.ped
 
-ped ../PAGEII_Chr3.phased.filtered.ped
+map ../belbig01/for_jose-luis/PAGEII_Chr22.phased.filtered.map3
+
+output pagealaki
 
 slice_size 350
 
 step_size 350
 
-perm_count 12
+perm_count 20
 
-shingle_size 20
+shingle_size 15
 
 shingle_overlap 0
 
-bucket_count 4
+bucket_count 5
 
 max_thread 20
 
@@ -27,6 +29,9 @@ min_length 2.9
 
 auto_slice 1
 
-cm_overlap 1.4
+cm_overlap 1
 
-output out
+
+minhash_threshold 55
+
+
