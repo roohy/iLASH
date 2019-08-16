@@ -29,7 +29,7 @@ Context::Context()
 
 }
 
-
+//Reads the map file
 void Context::read_map(const char * map_addr) {
     ifstream maps(map_addr,ifstream::in);
     string chrom;
@@ -45,7 +45,7 @@ void Context::read_map(const char * map_addr) {
     }
 
     this->map_flag = true;
-    cout<<"Read "<<this->map_data.size()<<" lines"<<endl;
+    cout<<"Read "<<this->map_data.size()<<" lines of SNP data."<<endl;
     return;
 
 }
@@ -56,15 +56,15 @@ void Context::auto_slice_map(double min_length,double cm_overlap) {
         throw "No Map file read before...";
     }
 
-    unsigned base = 0,last=0;
-    unsigned overlap_point=0;
+    unsigned base = 0,last=0; //Pointers to the begining and the end of each slice
+    unsigned overlap_point=0; 
     unsigned shingle_i = 0;
 
 
     while(last+this->shingle_size < this->map_data.size()){
         last  = last + 1;
         if(this->map_data[last].chrome != this->map_data[base].chrome){
-            cout<<"we don't support the multiple chromosome runs yet"<<endl;
+            cout<<"We don't support the multiple chromosome runs yet"<<endl;
             break;
         }
         else if(this->map_data[last].gen_dist-this->map_data[base].gen_dist >= min_length){
@@ -97,13 +97,13 @@ void Context::auto_slice_map(double min_length,double cm_overlap) {
             this->minhashable.push_back(false);
         shingle_i += temp_shingle_count;
     }
-    cout<<"Done with slicing\n";
+    cout<<"Done with slicing.\n";
 
 }
 
 void Context::slice_map(unsigned slice_size, unsigned step_size) {
     if(!this->map_flag){
-        cout<<"No Map file is available"<<endl;
+        cout<<"No Map file is available!"<<endl;
         throw "No Map file read before...";
     }
     this->slice_size = slice_size;

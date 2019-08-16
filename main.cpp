@@ -70,15 +70,17 @@ RunOptions extractFromFile(char* file_addr){ //populates a runOptions instance f
         else if(option == "minhash_threshold"){
             optionFile>>runOptions.minhash_threshold;
         }
+        else if(option == "haploid_mode"){
+            optionFile>>runOptions.haploid_mode;
+        }
     }
     return runOptions;
 }
 
 int main(int argc, char *argv[]) {
-
     cout<<"Reading configurations from: "<<argv[1]<<endl;
     RunOptions runOptions = extractFromFile(argv[1]);
-    cout<<"Map loading from address:"<<runOptions.map_addr<<endl;
+    cout<<"Map loading from: "<<runOptions.map_addr<<endl;
     //Initializing the experiment
     Experiment xp;
     //setting up the context of the experiment

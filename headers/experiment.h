@@ -18,7 +18,7 @@
 
 
 
-class Experiment{ //A run of I-Lash is an experiment
+class Experiment{ //A run of iLASH is an experiment
 
 public:
     Context context;

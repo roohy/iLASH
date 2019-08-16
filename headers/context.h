@@ -7,7 +7,6 @@
 
 
 #include <string>
-//#include <map>
 #include <vector>
 #include <mutex>
 #include <unordered_set>
@@ -15,30 +14,32 @@
 
 typedef uint8_t dnabit;
 
+//Run option is used to pass the program arguments from the file to the context class.
 class RunOptions{
 public:
-    std::string map_addr;
-    std::string ped_addr;
-    unsigned slice_size;
-    unsigned perm_count;
-    unsigned shingle_size;
-    unsigned bucket_count;
+    std::string map_addr; //map file address
+    std::string ped_addr; //genotype file address, must be formatted in plink ped format.
+    unsigned slice_size; //In case genetic distance is not used for slicing. Number of SNPs can be used.
+    unsigned perm_count;    //Number of permutations for minhash signature
+    unsigned shingle_size;  //size of tokens for Jaccard similarity score.
+    unsigned bucket_count;  //Number of minhash signatures in each band to create LSH signature.
     unsigned max_thread; //doesn't work
-    std::string  out_addr;
-    double interest_threshold;
-    double match_threshold;
+    std::string  out_addr; //output address.
+    double interest_threshold; //Threshold to declare an LSH match interesting enough to be analyzed in detail.
+    double match_threshold; //Threshold to declare an LSH match an actual match without detailed analysis.
     unsigned short max_error; //doesn't work
-    unsigned step_size;
-    unsigned shingle_overlap;
-    double minimum_length;
-    bool auto_slice;
-    double cm_overlap;
-    uint8_t minhash_threshold;
+    unsigned step_size; //The amount of non-overlap between two consecutive slices. In terms of number of SNPs
+    unsigned shingle_overlap; //Overlap in terms of number SNPs between two consecutive shingles.
+    double minimum_length; //Minimum length, in terms of genetic distance, for a segment to written to output as a match. This will be used in auto slice mode to determine the size of
+    bool auto_slice; //if this flag is set to true, context will use min-length value to determine the window size.
+    double cm_overlap; //for auto-slicing based on genetic distance, cm_overlap acts the same as step_size, only in terms of genetic distance.
+    uint8_t minhash_threshold; //TODO:write it
+    bool haploid_mode; //This option can be used to run iLASH over X chromosome
 
 };
 
 
-
+//The MapData class encapsulates the lines of a MAP file.
 class MapData{
 public:
     std::string chrome; //chr number
@@ -53,7 +54,7 @@ public:
 };
 
 
-
+//Context class is the configuration and synchronization class behind every experiment.
 
 class Context{
 public:
@@ -69,6 +70,7 @@ public:
 //    std::vector<std::pair<bool,bool> >slice_extendable;//show wether we can extend a slice from both sides or not
     std::vector<bool>minhashable;
 
+    //Some of the
 
     unsigned long slice_count; //number of slices
     unsigned perm_count; //Number of permutations

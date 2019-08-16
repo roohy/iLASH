@@ -15,17 +15,20 @@
 
 using namespace std;
 
+//Thread handle function for LSH worker threads in a master-slave model.
+//Instantiates a LSH slave instance and then runs it.
+//All the inputs are the required inputs for LSH threads.
 void lsh_thread(Corpus *corpus,std::mutex * linesLock,std::queue<std::string*> * linesQ,bool *runFlag){
     LSH_Slave slave(corpus,linesLock,linesQ,runFlag);
     slave.run();
-
 }
 
-
+//Context get-set. Context objects can also be imported from a RunOptions instance using the setup_context functions.
 void Experiment::set_context(Context context) {
     this->context = context;
 }
 
+//This function is deprecated. It is just here for code continuity reasons.
 void Experiment::setup_context(const char * map_addr, unsigned slice_size, unsigned step_size
         , unsigned perm_count, unsigned shingle_size
         , unsigned shingle_overlap, unsigned bucket_count
@@ -37,15 +40,17 @@ void Experiment::setup_context(const char * map_addr, unsigned slice_size, unsig
 
 }
 
-
+//Using a RunOptions instance, this function initializes the Context of the experiment. Please read the context class docs.
 void Experiment::setup_context(RunOptions * runOptions) {
     this->context.prepare_context(runOptions);
     this->corpus.initializer(&(this->context));
 
 }
-
+//This function encapsulates the main function of iLASH. Right now in public version, iLASH only estimates IBD in bulk files.
+//This function gets the input and output addresses. Estimates the IBD tracts in the input file and writes it in the
+//output file using output_addr.
 void Experiment::read_bulk(const char *input_addr, const char *output_addr) {
-
+    //Maximum number of available threads on the system. 
     unsigned max_threads = std::thread::hardware_concurrency();
     cout<<"The number of cores supported by this machine is "<<max_threads<<endl;
     max_threads *= 2;
@@ -67,9 +72,8 @@ void Experiment::read_bulk(const char *input_addr, const char *output_addr) {
     string* local_str_ptr = new string;
     long counter = 0;
 
-
+    //Read everything from file and load it in a queue. Worker threads will process them.
     while(getline(ped_file,*local_str_ptr)){
-//        cout<<"adding one "<<local_str_ptr->size()<<endl;
         linesLock->lock();
         linesQ->push(local_str_ptr);
         linesLock->unlock();
@@ -79,7 +83,7 @@ void Experiment::read_bulk(const char *input_addr, const char *output_addr) {
             break;
         }*/
     }
-
+    //wait for threads to finish going through the queue
     cout<<"Read everything from the file."<<endl;
     while(true){
         linesLock->lock();
@@ -95,7 +99,7 @@ void Experiment::read_bulk(const char *input_addr, const char *output_addr) {
     for(unsigned i = 0 ; i < lsh_thread_list.size();i++){
         lsh_thread_list[i].join();
     }
-
+    //start estimating IBD from the LSH hash structure
     cout<<"Writing\n";
     cout<<"---"<<this->corpus.agg_ptr->size()<<"\n";
     this->write_to_file(output_addr);
@@ -106,7 +110,7 @@ void Experiment::read_bulk(const char *input_addr, const char *output_addr) {
 void Experiment::write_to_file(const char *output_addr) {
     unsigned max_threads = std::thread::hardware_concurrency();
     max_threads *= 2;
-//    max_threads = 1;
+    //see the writer class for more details
     Writer writer(output_addr,max_threads,&(this->corpus));
     writer.run();
     writer.end_file();
