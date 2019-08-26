@@ -56,7 +56,17 @@ iLASH divides the genotype data in consecutive slices and then runs LSH algorith
 
 ### LSH-Related Parameters
 
-- **ped:**
-- **ped:**
-- **ped:**
-- **ped:**
+As mentioned before, iLASH performs a realization of LSH algorithm (Inspired from [Mining of Massive Datasets, Chapter 3](http://www.mmds.org)) on each slice along the genome to find, for each individual haplotype, other haplotypes that are similar to it on the same slice (window) along the chromosome. The criteria used for measuring this similarity is [Jaccard Similarity](https://en.wikipedia.org/wiki/Jaccard_index) among pairs of haplotypes. For every haplotype at a slice, contigous markers are groupd together to make shingles(tokens, k-mers, or words). This will turn every haplotype (at a slice) to a set of words and enable Jaccard Index comparisons. To learn more about LSH, Minhashing and other details regarding this step, either the paper or [Mining of Massive Datasets, Chapter 3](http://www.mmds.org) can be useful. Here we just explain the parameters that help control the various properties of the algorithm and will not go into the details of the algorithm itself.
+
+- **shingle_size:** This parameter controls the size of every shingle (k-mer, token or word) in terms of number of SNPs in each one. Larger shingles, will contribute to less accruacy and shorter shingle can lead to more false-positives and/or slower performance of iLASH. We recommend choosing a shingle size of 15-30.
+- **shingle_overlap:** Two neighboring shingles can overlap. This parameters controls that. We recommend an overlap of zero between shingles as it can lead to false-positives.
+- **perm_count:** Number of permutations done for the *Minhashing* step of LSH. Increasing the number of permutations will cause iLASH to run slower. However, The more permutations done in minhashing, the more accurate the results. We recommend 20 permutations for a subtle accuracy and 12 permutations for a speedy performance.
+- **bucket_count:** Number buckets (LSH values) for generating LSH signature. *perm_count* value should be divisible by *bucket_count*. We recommend having a bucket count of 4 with 20 permutations and a bucket count of 3 with 12 permutations.
+- **interest_threshold:** Minimum estimated similarity score between 2 slices in order for them to be declared a possible match pair. Possible matches are further investigated in detail to find IBD segments.
+- **match_threshold:** Minimum estimated similarity score between 2 slices in order for them to be declared a matched pair. Matched pair are considered a match without any further detailed analysis. This can speed of the algorithm in exchange for possible false-positives.
+- **minhash_threshold:** When *auto_slice* is set to 1 (or anything other than 0), This parameter sets the minimum length of a slice in terms of SNPs. If a slice has fewer SNPs comprising them, they will not be analyzed in LSH steps. This is to prevent false-positives in areas of low-complexity on the genome, also any other places with SNP density of the array so low that the small number of total possible slice values.
+
+### Other Parameters
+
+- **max_thread:** This parameters sets the maximum number of threads to be requested by iLASH. We recommend setting it to zero on non-cluster machines so that iLASH could request for the optimal number itself.
+- **max_error:** This is item is not fully implemented yet.
