@@ -13,7 +13,7 @@
 
 using namespace std;
 
-
+//Captures one line in map file
 MapData::MapData(string chrom_in, string RSID_in, double dist_in, unsigned pos_in) {
     this->chrome = chrom_in;
     this->RSID = RSID_in;
@@ -29,7 +29,7 @@ Context::Context()
 
 }
 
-//Reads the map file
+//Reads the map file from address. Please refere to PLINK PED/MAP format specification. 
 void Context::read_map(const char * map_addr) {
     ifstream maps(map_addr,ifstream::in);
     string chrom;
@@ -49,44 +49,44 @@ void Context::read_map(const char * map_addr) {
     return;
 
 }
-
+//After loading the map file, these slicing function can divide the SNPs into windows. 
 void Context::auto_slice_map(double min_length,double cm_overlap) {
-    if(!this->map_flag){
+    if(!this->map_flag){ //check to see if map file is loaded.
         cout<<"No Map file is available"<<endl;
         throw "No Map file read before...";
     }
 
-    unsigned base = 0,last=0; //Pointers to the begining and the end of each slice
-    unsigned overlap_point=0; 
+    unsigned base = 0,last=0; //Pointers to the begining and the end of the current slice
+    unsigned overlap_point=0; //pointer to keep track of the shingle overlap
     unsigned shingle_i = 0;
 
 
-    while(last+this->shingle_size < this->map_data.size()){
-        last  = last + 1;
-        if(this->map_data[last].chrome != this->map_data[base].chrome){
+    while(last+this->shingle_size < this->map_data.size()){ //check to make sure we are not overflowing
+        last  = last + 1; 
+        if(this->map_data[last].chrome != this->map_data[base].chrome){ //check to see if chromosome changes. NOT SUPPORTED YET!
             cout<<"We don't support the multiple chromosome runs yet"<<endl;
             break;
         }
-        else if(this->map_data[last].gen_dist-this->map_data[base].gen_dist >= min_length){
+        else if(this->map_data[last].gen_dist-this->map_data[base].gen_dist >= min_length){ 
             cout<<"SLICE MADE: "<<base<<"-"<<last<<"; Dist: "<<this->map_data[last].gen_dist-this->map_data[base].gen_dist<<endl;
-            this->slice_idx.push_back(make_pair(base,last));
+            this->slice_idx.push_back(make_pair(base,last)); //adds each slice's coordinates to the list.
             base = overlap_point;
 
 
 
         }
         if(this->map_data[last].gen_dist-this->map_data[base].gen_dist >= min_length-cm_overlap && overlap_point <= base){
-            overlap_point = last;
+            overlap_point = last; //handling the overlap
         }
     }
-    if(base == last){
+    if(base == last){ //there are 2 ways we can reach the end of a chromosome, this part addresses both of them. 
         this->slice_idx[this->slice_idx.size()-1].second = this->map_data.size();
     }else{
         this->slice_idx.push_back(make_pair(base,this->map_data.size()));
     }
     cout<<"Number of slices:"<<this->slice_idx.size()<<'\n';
     this->slice_count = this->slice_idx.size();
-
+    //This part breaks up each slice into a set of shingle coordinates. See Context::shingles_in_slice function
     unsigned temp_shingle_count;
     for(unsigned k = 0 ; k < this->slice_count ; k++){
         temp_shingle_count = this->shingles_in_slice(this->slice_idx[k].first,this->slice_idx[k].second);
@@ -256,7 +256,7 @@ bool Context::is_first_slice(unsigned slice_number){
                            == this->map_data[this->slice_idx[slice_number-1].first].chrome));
 
 }
-
+//Counts the number of shingles and creates a map of beginning and endings
 unsigned Context::shingles_in_slice(unsigned long first, unsigned long last) {
     unsigned counter = 0 ;
     while(first+this->shingle_size < last){

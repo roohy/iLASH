@@ -74,15 +74,15 @@ public:
 
     unsigned long slice_count; //number of slices
     unsigned perm_count; //Number of permutations
-    std::pair<unsigned long, unsigned long> **perm_matrix;
-    unsigned shingle_size;
+    std::pair<unsigned long, unsigned long> **perm_matrix; //values for every permutation on every slice
+    unsigned shingle_size; 
     unsigned bucket_count;
     unsigned bucket_size;
-    double *approx_list;
-    double threshold;
-    unsigned minimum_match;
-    unsigned minimum_interest;
-    unsigned shingle_overlap;
+    double *approx_list; //List of approximated similarity based on LSH settings
+    double threshold; //interest threshold
+    unsigned minimum_match; //minimum number of LSH signature to be declared a match.
+    unsigned minimum_interest; //minimum number of LSH signatures to be interesting
+    unsigned shingle_overlap; 
     unsigned slice_size;
     unsigned step_size;
     double match_thresh;
@@ -99,19 +99,19 @@ public:
 
 
     Context();
-    void read_map(const char* );
-    void auto_slice_map( double,double);
-    void slice_map(unsigned,unsigned);
-    void prepare_for_minhash(unsigned );
+    void read_map(const char* ); //Read the map file
+    void auto_slice_map( double,double); //slice the chromosome in auto-slice (distance-based) mode
+    void slice_map(unsigned,unsigned); //slice the choromosome in SNP-based mode
+    void prepare_for_minhash(unsigned ); //setup the minhashing variables
     void prepare_context(const char *,unsigned,unsigned ,unsigned ,unsigned ,unsigned ,unsigned ,double,double,double,
-                         unsigned short,bool,double);
+                         unsigned short,bool,double); //will be removed
 
-    void prepare_context(RunOptions *);
-    void approximate();
-    bool same_chrom(unsigned long &i1, unsigned long &i2);
-    bool is_last_slice(unsigned);
-    bool is_first_slice(unsigned);
-    unsigned shingles_in_slice(unsigned long, unsigned long);
+    void prepare_context(RunOptions *); // prepare the context of the experiment
+    void approximate(); //approximate the minimum number of LSH signatures need to be declared either interesting or match
+    bool same_chrom(unsigned long &i1, unsigned long &i2); //check to see if the two are on the same chromosome
+    bool is_last_slice(unsigned); 
+    bool is_first_slice(unsigned);//look at the implementation for more details
+    unsigned shingles_in_slice(unsigned long, unsigned long); //how many shingles in one slice
 
 };
 
