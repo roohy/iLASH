@@ -56,8 +56,8 @@ void Experiment::read_bulk(const char *input_addr, const char *output_addr) {
     max_threads *= 2;
 //    max_threads = 1;
 
-    queue<string *> *linesQ = new queue<string *>();
-    mutex *linesLock = new mutex;
+    queue<string *> *linesQ = new queue<string *>(); //Samples will be loaded in the this queue
+    mutex *linesLock = new mutex; //This lock is in charge of synchronizing the linesQ
     bool runFlag = true;
 
     vector<thread> lsh_thread_list;

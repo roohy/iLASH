@@ -21,11 +21,12 @@ filereader::filereader(std::string * input_string,Context * context):iss(*input_
     }
     this->ind = 0;
     this->shingle_ind = 0;
-
-    this->bits = new dnabit*[2];
+    //Initializing the memory required for the haplotype analysis in LSH steps. 
+    //bits will hold the real SNP values
+    this->bits = new dnabit*[2]; 
     this->bits[0] = new dnabit[this->context->map_data.size()];
     this->bits[1] = new dnabit[this->context->map_data.size()];
-
+    //dna hash will hold tokenized SNPs that are turn into hashes
     this->dna_hash = new uint32_t*[2];
     this->dna_hash[0] = new uint32_t[this->context->shingle_map.size()];
     this->dna_hash[1] = new uint32_t[this->context->shingle_map.size()];
@@ -35,17 +36,14 @@ filereader::filereader(std::string * input_string,Context * context):iss(*input_
     for(unsigned i = 0 ; i < this->context->map_data.size(); i++){
         this->iss>>this->bits[0][i];
         this->iss>>this->bits[1][i];
-        //cout<<this->bits[0][i]<<"-"<<this->bits[1][i]<<" "; Prints bits :D
+        
     }
     delete input_string;
-//    cout<<"reader ready"<<endl; goes to the new line after printing the bits :D
-
 }
 
 
 
 uint32_t * filereader::getNextHashed() {
-    //cout<<this->head<<"<-->"<<this->ind<<"***"<<this->last<<"^^^"<<this->ind-this->head<<'\n';
     //this->hash_buffer[0] = FNV::fnv1a(&(this->bits[0][head]),(size_t)(this->ind-this->head));
     //this->hash_buffer[1] = FNV::fnv1a(&(this->bits[1][head]),(size_t)(this->ind-this->head));
     this->hash_buffer[0] = FNV::fnv1a(&(this->bits[0][this->context->shingle_map[this->shingle_ind].first]),(size_t)(this->context->shingle_map[this->shingle_ind].second-this->context->shingle_map[this->shingle_ind].first));
@@ -85,7 +83,7 @@ bool filereader::hasNext() {
     }
     return  true;*/
 }
-
+//sets the stage for the next slice to get parsed. It uses slice_idx list to the indices for the first and the last SNPs. It uses shingle idx list from context to do the same for shingles.
 void filereader::set_slice(unsigned slice_id) {
 
     this->ind = this->context->slice_idx[slice_id].first;
@@ -103,7 +101,7 @@ filereader::~filereader() {
 
     delete[] this->hash_buffer;
 }
-
+//records the hash values of the slice in the corpus memory so that it can come back to them later for more details analysis. 
 void filereader::register_to_experiment(Corpus * corpus) {
 //
 //    this->ids[0] = corpus->register_corpus(this->bits[0],this->meta[1]+"_0");

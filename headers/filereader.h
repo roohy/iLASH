@@ -14,7 +14,8 @@
 
 
 
-
+//the filereader class is in charge of parsing genotype lines and analysing them. 
+//every instance checks 
 
 
 const unsigned meta_size = 6;
@@ -31,8 +32,8 @@ class filereader {
 
 
 public:
-    std::string meta[meta_size];
-    dnabit ** bits;
+    std::string meta[meta_size]; 
+    dnabit ** bits; 
     uint32_t *hash_buffer;
     uint32_t ids[2];
 

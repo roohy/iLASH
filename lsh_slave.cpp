@@ -25,7 +25,7 @@ LSH_Slave::LSH_Slave(Corpus * corpus, std::mutex *linesLock, std::queue<std::str
     this->runFlag = runFlag;
 }
 
-void LSH_Slave::run() {
+void LSH_Slave::run() { 
     string * line = NULL;
     while(*runFlag) {
         //trying to read from input Q
@@ -44,16 +44,17 @@ void LSH_Slave::run() {
             filereader *parser = new filereader(line,this->corpus->context);
             Minhasher *minhash = new Minhasher(this->corpus->context);
 
-            parser->register_to_experiment(this->corpus);
+            parser->register_to_experiment(this->corpus); //registers the two haplotypes read into the corpus. 
 
-            uint32_t * hash_buffer;
-            uint32_t ** lsh_buffer;
-            std::unordered_map<uint32_t ,unsigned short> relatives[2];
+            uint32_t * hash_buffer; //minhash buffer
+            uint32_t ** lsh_buffer; //LSH temporary buffer
+            std::unordered_map<uint32_t ,unsigned short> relatives[2]; //LSH hits for each haplotype. 
 
 
             for(unsigned i = 0; i < this->corpus->context->slice_idx.size(); i++){
-
-                parser->set_slice(i);
+                
+                //setting the slice number will let the parser know what part of the coordinates to use
+                parser->set_slice(i); 
                 minhash->set_slice_num(i);
                 //int counter = 0;
 
@@ -61,11 +62,14 @@ void LSH_Slave::run() {
                 if(this->corpus->context->minhashable[i]){
                     while(parser->hasNext()){
                         //counter++;
-                        hash_buffer = parser->getNextHashed();
+                        //gets the hash buffer from the parser and feeds it into the minhash analyzer.
+                        hash_buffer = parser->getNextHashed(); 
                         minhash->insert(hash_buffer);
+                        //once all the hash values are inserted in the minhash analyzer, minhash analyzer can calculate the LSH values. 
                     }
 
                     //preparing for LSH
+                    //based on the hashes fed into the minhash analyzer, it generates the lsh signature and returns in in a buffer. 
                     lsh_buffer = minhash->calculate_lsh();
 
                     relatives[0].clear();
