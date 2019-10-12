@@ -25,7 +25,11 @@ iLASH requires a configuration file as input.
 
 `$ IBD configuration_file_address`
 
-A sample configuration file is available in the repository.
+A sample configuration file is available in the repository. 
+
+`$/build/IBD config`
+
+The command above will use the sample configuration file to do a test run of iLASH. A sample result of this command can be found in `test_files/sample_output`. Please note that iLASH is a randomized algorithm. Thus, the estimated segments will not neccesarily be an exact match for the same input file in different runs.
 
 ## Configuration File
 
