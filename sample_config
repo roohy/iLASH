@@ -3,7 +3,7 @@ map ./test_files/test.map
 
 ped ./test_files/test.ped
 
-output ./test_files/path.match
+output ./test_files/output.match
 
 slice_size 350
 
