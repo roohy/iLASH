@@ -1,9 +1,9 @@
 
-ped path/to/ped.ped
+map ./test_files/test.map
 
-map path/to/map.map
+ped ./test_files/test.ped
 
-output output/path.match
+output ./test_files/path.match
 
 slice_size 350
 
