@@ -10,32 +10,56 @@
 #include <vector>
 #include <mutex>
 #include <unordered_set>
+#include <exception>
+#include <chrono>
+#include <thread>
 
 
 typedef uint8_t dnabit;
+static const unsigned VERSION_MAJOR = 1;
+static const unsigned VERSION_MINOR = 0;
+static const unsigned VERSION_REVISION = 0;
 
 //Run option is used to pass the program arguments from the file to the context class.
 class RunOptions{
 public:
     std::string map_addr; //map file address
     std::string ped_addr; //genotype file address, must be formatted in plink ped format.
-    unsigned slice_size; //In case genetic distance is not used for slicing. Number of SNPs can be used.
-    unsigned perm_count;    //Number of permutations for minhash signature
-    unsigned shingle_size;  //size of tokens for Jaccard similarity score.
-    unsigned bucket_count;  //Number of minhash signatures in each band to create LSH signature.
-    unsigned max_thread; //doesn't work
-    std::string  out_addr; //output address.
-    double interest_threshold; //Threshold to declare an LSH match interesting enough to be analyzed in detail.
-    double match_threshold; //Threshold to declare an LSH match an actual match without detailed analysis.
-    unsigned short max_error; //doesn't work
-    unsigned step_size; //The amount of non-overlap between two consecutive slices. In terms of number of SNPs
-    unsigned shingle_overlap; //Overlap in terms of number SNPs between two consecutive shingles.
-    double minimum_length; //Minimum length, in terms of genetic distance, for a segment to written to output as a match. This will be used in auto slice mode to determine the size of
-    bool auto_slice; //if this flag is set to true, context will use min-length value to determine the window size.
-    double cm_overlap; //for auto-slicing based on genetic distance, cm_overlap acts the same as step_size, only in terms of genetic distance.
+    unsigned slice_size = 800; //In case genetic distance is not used for slicing. Number of SNPs can be used.
+    unsigned perm_count = 20;    //Number of permutations for minhash signature
+    unsigned shingle_size = 20;  //size of tokens for Jaccard similarity score.
+    unsigned bucket_count = 5;  //Number of minhash signatures in each band to create LSH signature.
+    unsigned max_thread = 0; //doesn't work
+    long long seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::string  out_addr = "match_file.ibd"; //output address.
+    double interest_threshold = 0.7; //Threshold to declare an LSH match interesting enough to be analyzed in detail.
+    double match_threshold = 0.99; //Threshold to declare an LSH match an actual match without detailed analysis.
+    unsigned short max_error = 0; //doesn't work
+    unsigned step_size = 800; //The amount of non-overlap between two consecutive slices. In terms of number of SNPs
+    unsigned shingle_overlap = 0; //Overlap in terms of number SNPs between two consecutive shingles.
+    double minimum_length = 3.0; //Minimum length, in terms of genetic distance, for a segment to written to output as a match. This will be used in auto slice mode to determine the size of
+    double slice_length = 3.0;
+    bool auto_slice = true; //if this flag is set to true, context will use min-length value to determine the window size.
+    double cm_overlap = 1.5; //for auto-slicing based on genetic distance, cm_overlap acts the same as step_size, only in terms of genetic distance.
     uint8_t minhash_threshold; //TODO:write it
     bool haploid_mode; //This option can be used to run iLASH over X chromosome
 
+};
+
+
+struct FileException: public std::exception
+{
+    const char* what() const throw()
+    {
+        return "File does not exsist or iLASH lacks proper permissions";
+    }
+};
+struct FieldException: public std::exception
+{
+    const char* what() const throw()
+    {
+        return "One of the required fields is not present in the configuration file";
+    }
 };
 
 
@@ -89,6 +113,7 @@ public:
     double minimum_length;
     unsigned short max_error;
     bool auto_slice;
+    unsigned thread_count;
 
     uint8_t minhash_threshold;
 
@@ -102,9 +127,7 @@ public:
     void read_map(const char* ); //Read the map file
     void auto_slice_map( double,double); //slice the chromosome in auto-slice (distance-based) mode
     void slice_map(unsigned,unsigned); //slice the choromosome in SNP-based mode
-    void prepare_for_minhash(unsigned ); //setup the minhashing variables
-    void prepare_context(const char *,unsigned,unsigned ,unsigned ,unsigned ,unsigned ,unsigned ,double,double,double,
-                         unsigned short,bool,double); //will be removed
+    void prepare_for_minhash(unsigned ,long long); //setup the minhashing variables
 
     void prepare_context(RunOptions *); // prepare the context of the experiment
     void approximate(); //approximate the minimum number of LSH signatures need to be declared either interesting or match

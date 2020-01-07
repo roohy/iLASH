@@ -32,6 +32,9 @@ Context::Context()
 //Reads the map file from address. Please refere to PLINK PED/MAP format specification. 
 void Context::read_map(const char * map_addr) {
     ifstream maps(map_addr,ifstream::in);
+    if(maps.fail()){
+        throw FileException();
+    }
     string chrom;
     string RSID_in;
     double dist_in;
@@ -45,7 +48,7 @@ void Context::read_map(const char * map_addr) {
     }
 
     this->map_flag = true;
-    cout<<"Read "<<this->map_data.size()<<" lines of SNP data."<<endl;
+    cout<<"Loaded "<<this->map_data.size()<<" lines of SNP data."<<endl;
     return;
 
 }
@@ -55,7 +58,7 @@ void Context::auto_slice_map(double min_length,double cm_overlap) {
         cout<<"No Map file is available"<<endl;
         throw "No Map file read before...";
     }
-
+    min_length -= 0.1;
     unsigned base = 0,last=0; //Pointers to the begining and the end of the current slice
     unsigned overlap_point=0; //pointer to keep track of the shingle overlap
     unsigned shingle_i = 0;
@@ -68,7 +71,7 @@ void Context::auto_slice_map(double min_length,double cm_overlap) {
             break;
         }
         else if(this->map_data[last].gen_dist-this->map_data[base].gen_dist >= min_length){ 
-            cout<<"SLICE MADE: "<<base<<"-"<<last<<"; Dist: "<<this->map_data[last].gen_dist-this->map_data[base].gen_dist<<endl;
+            cout<<"Slice detected: "<<base<<"-"<<last<<"; Dist: "<<this->map_data[last].gen_dist-this->map_data[base].gen_dist<<endl;
             this->slice_idx.push_back(make_pair(base,last)); //adds each slice's coordinates to the list.
             base = overlap_point;
 
@@ -142,7 +145,7 @@ void Context::slice_map(unsigned slice_size, unsigned step_size) {
     cout<<"Done with slicing\n";
 }
 
-void Context::prepare_for_minhash(unsigned perm_count) {
+void Context::prepare_for_minhash(unsigned perm_count,long long seed) {
     this->perm_count = perm_count;
     /* if(shingle_size%8 != 0){
         this->p_shingle_size = (shingle_size/8)+1;
@@ -153,7 +156,7 @@ void Context::prepare_for_minhash(unsigned perm_count) {
 
     this->perm_matrix = new pair<unsigned long, unsigned long>*[this->slice_count];
 
-    default_random_engine generator;
+    default_random_engine generator(seed);
     uniform_int_distribution<unsigned long> distribution(0,this->word_count);
 
     for(unsigned i  = 0 ; i < this->slice_count; i++){
@@ -188,45 +191,20 @@ void Context::approximate() {
         this->minimum_match = this->bucket_count+1;
 
     cout<<"Interest T:"<<this->minimum_interest<<"\n Match T:"<<this->minimum_match<<endl;
-    return;
 }
 
-void Context::prepare_context(const char *map_addr, unsigned slice_size,unsigned step_size, unsigned perm_count, unsigned shingle_size
-        ,unsigned shingle_overlap, unsigned bucket_count,double thresh,double match_threshold
-        ,double minimum_length, unsigned short max_error,bool auto_slice,double cm_overlap) {
-    this->read_map(map_addr);
-    this->auto_slice = auto_slice;
-    this->shingle_size = shingle_size;
-    this->shingle_overlap = shingle_overlap;
-    if(auto_slice){
-        this->auto_slice_map(minimum_length,cm_overlap);
-    }else{
-        this->slice_map(slice_size,step_size);
-    }
-
-    this->prepare_for_minhash(perm_count);
-    this->bucket_count = bucket_count;
-    this->bucket_size = perm_count/bucket_count;
-    this->threshold = thresh;
-
-    this->match_thresh = match_threshold;
-    this->minimum_length = minimum_length;
-    this->max_error = max_error;
-    this->approximate();
-
-}
 void Context::prepare_context(RunOptions * runOptions) {
     this->read_map(runOptions->map_addr.c_str());
     this->auto_slice = runOptions->auto_slice;
     this->shingle_size = runOptions->shingle_size;
     this->shingle_overlap = runOptions->shingle_overlap;
     if(auto_slice){
-        this->auto_slice_map(runOptions->minimum_length,runOptions->cm_overlap);
+        this->auto_slice_map(runOptions->slice_length,runOptions->cm_overlap);
     }else{
         this->slice_map(runOptions->slice_size,runOptions->step_size);
     }
-
-    this->prepare_for_minhash(runOptions->perm_count);
+    cout<<"The seed used for pseudo-random number generation is:"<<runOptions->seed<<endl;
+    this->prepare_for_minhash(runOptions->perm_count,runOptions->seed);
     this->bucket_count = runOptions->bucket_count;
     this->bucket_size = runOptions->perm_count/bucket_count;
     this->threshold = runOptions->interest_threshold;
@@ -239,6 +217,14 @@ void Context::prepare_context(RunOptions * runOptions) {
     this->minhash_threshold = runOptions->minhash_threshold;
 
     this->approximate();
+
+    this->thread_count = std::thread::hardware_concurrency();
+    cout<<"The number of cores on the host: "<<this->thread_count<<endl;
+    this->thread_count *= 2;
+    if(runOptions->max_thread > 0 )
+        this->thread_count = runOptions->max_thread;
+
+
 
 }
 

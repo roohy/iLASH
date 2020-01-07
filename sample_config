@@ -23,11 +23,11 @@ match_threshold 0.99
 
 interest_threshold 0.70
 
-max_error 0
-
 min_length 2.9
 
 auto_slice 1
+
+slice_length 2.9
 
 cm_overlap 1
 

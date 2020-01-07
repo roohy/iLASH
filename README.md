@@ -1,6 +1,6 @@
 # iLASH: Ultra-Rapid Detection of IBD Tracts
 
-## Compiling
+## Compilation and System Requirements
 
 To compile iLASH, CMAKE v3.5 or higher is required.
 First, create a directory to generate the Makefile:
@@ -9,7 +9,17 @@ First, create a directory to generate the Makefile:
 
 `$ cd build`
 
-Generate the Makefile using the following command. C++ compiler used by CMAKE should support C++ 11 standard libraries (GCC v5.0 or newer is recommended).
+ C++ compiler used by CMAKE should support C++ 11 standard (GCC 4.8.1 or later versions). POSIX threads library is recommended for multi-threading features.
+
+iLASH has been tested and successfully compiled using the following compilers:
+
+`Apple LLVM version 10.0.1 (clang-1001.0.46.4)- On macOS (Catalina & Mojave) - MacBook Pro, Mid 2015, 2.5 GHz Quad-Core Intel Core i7 with 16 GB DDR3 Memory`
+
+`GCC 4.8.5 on CentOS 7 - 12 Core Intel Xeon E5-2695 2.4 GHz with 128 GB DDR2 Memory`
+
+`GCC 5.0 on Ubuntu 14.04 - 28 Core Intel Virtual Machine with 256 GB of DDR3 Memory on Google Cloud Platform.`
+
+Generate the Makefile using the following command.
 
 `$ cmake ..`
 
@@ -17,19 +27,101 @@ Compile iLASH using the generated Makefile:
 
 `$ make`
 
-The compiled output named 'IBD' can be accessed from the *build* folder now.
+The compiled output named 'ilash' can be accessed from the *build* folder now.
 
 ## Running iLASH
 
 iLASH requires a configuration file as input.
 
-`$ IBD configuration_file_address`
+`$ ilash configuration_file_address`
 
 A sample configuration file is available in the repository. 
 
-`$/build/IBD sample_config`
+`$/build/ilash sample_config`
 
-The command above will use the sample configuration file to do a test run of iLASH. A sample result of this command can be found in `test_files/sample_output`. Please note that iLASH is a randomized algorithm. Thus, the estimated segments will not neccesarily be an exact match for the same input file in different runs.
+The command above will use the sample configuration file to do a test run of iLASH. A sample result of this command can be found in `test_files/sample_output`. Please note that iLASH is a randomized algorithm. Thus, the estimated segments will not neccesarily be an exact match for the same input file in different runs. A way to address this issue is to pass a seed number to iLASH.
+
+In the test run, we will see the following output on the console while iLASH is getting ready to load the genotypes.
+
+```
+*** iLASH (Identity by descent using LocAlity Sensitive Hashing) ***
+Configuration file address: sample_config
+Automatic slicing mode is activated.
+Map file address: ./test_files/test.map
+Loaded 116415 lines of SNP data.
+Slice detected: 0-713; Dist: 2.81803
+Slice detected: 487-996; Dist: 2.81136
+Slice detected: 842-1277; Dist: 2.80326
+.
+.
+.
+Slice detected: 114301-114842; Dist: 2.80182
+Slice detected: 114636-115716; Dist: 2.80243
+Slice detected: 115153-116346; Dist: 2.80005
+Number of slices:152
+Done with slicing.
+The seed used for pseudo-random number generation is:1578362251613712
+Approximating for 0.7 for interest and 0.99 for Match
+1/5: 0.66874
+2/5: 0.795271
+3/5: 0.880112
+4/5: 0.945742
+5/5: 1
+Interest T:2
+ Match T:5
+ ```
+
+This log should include:
+
+* The address for configuration file.
+* Whether slicing is done through number of SNPs or genetic distance(Automatic slicing).
+* Address of the PLINK map file.
+* Expected number of variants based on the map file.
+* A list of all the slices, with respective start and end points, and their length.
+* The seed value for random number generation. This can be used for replacating purposes as iLASH is a randomized algorithm.
+* Expected similarity based on the number of matching LSH hash values.
+
+iLASH then starts to read the genotype file and estimate IBD using as many threads as allocated.
+
+ ```
+ Genotype file:./test_files/test.ped.
+Threads started
+Read everything from the file.
+```
+
+When all the lines of the ped file are analyzed, iLASH starts the parallel writing process.
+
+```
+Waiting for threads for finish their jobs
+Writing
+---168
+Starting Writer Threads...
+All Threads Working
+Everything done in the writer part
+```
+
+The output IBD file then can be inspected for IBD tracts estimated by iLASH:
+
+```
+0	00008_0	0	00039_1	1	235345397	236767330	rs10925318	rs2820211	2.96561	1
+0	00001_0	0	00039_1	1	156772899	162783473	rs10908679	rs6662567	8.76549	1
+0	00000_0	0	00039_1	1	166535962	173440147	rs2075976	rs12145086	6.00494	1
+0	00025_1	0	00038_1	1	1837391	4012956	rs28710181	rs4266850	5.96749	1
+```
+The columns are as follows:
+1. Family ID for sample 1.
+2. Sample ID for sample 1. Two haplotypes are differentiated using _0/_1.
+3. Family ID for sample 2.
+4. Sample ID for sample 2.
+5. Chromosome number.
+5. First basepair in the segment.
+6. Last basepair in the segment.
+7. First SNP ID in the segment.
+8. Last SNP ID in the segment.
+9. The length of the segment in cM.
+10. Percentage of k-mers(token, shingles) shared between the two samples on the matched haplotypes.
+
+The first line, for example, suggests that the first haplotype of the sample number 8 and the second haplotype of the sample number 39 share an IBD segment starting from basepair number 235345397 and ending in basepair number 236767330. The length of this segment is 2.97 cM. furthermore, the two samples share the same values for every k-mer in the region. 
 
 ## Configuration File
 
@@ -54,7 +146,8 @@ iLASH divides the genotype data in consecutive slices and then runs LSH algorith
 - **slice_size:** If *auto_slice* mode is set to *0*, This parameter would be used as slice length for SNP-based slicing. For example if this parameter is set to 2000, each slice will be 2000 SNPs long. This parameter will be ignored in other slice modes.
 - **step_size:** In the SNP-based slicing approach, step size dictates how many SNPs two consecutive windows will *not* share. Figure below demonstrates a scenario with a slice size of 2000 SNPs and a step size of 1000 SNPs. This parameter is also ignored in other slicing modes.
 ![SNP-Based Slicing](./assets/snp_based.png)
-- **min_length:** Minimum length of IBD tracts iLASH is looking for. Segments that are shorter than this threshold will be ignored. If *auto_slice* mode is set to 1, this value will be used in conjunction with the map file to determine the size of each slice in terms of number SNPs. This each slice will have a different SNP count but covers the same genetic distance. See the figure below.
+- **min_length:** Minimum length of IBD tracts iLASH is looking for. Segments that are shorter than this threshold will be ignored.
+- **slice_length:**: If *auto_slice* mode is set to 1, this value will be used in conjunction with the map file to determine the size of each slice in terms of number SNPs. This each slice will have a different SNP count but covers the same genetic distance. See the figure below.
 - **cm_overlap:** If *auto_slice* mode is set to 1, this value sets the amount of overlap two consecutive windows share (in terms of genetic distance). It can be thought of as the inverse of *step_size* parameter for distance-based slicing. For example, if *min_length* is set to 3 cM and *cm_overlap* is set to 1 cM, as shown in the figure below, *min_length - cm_overlap (3-1=2)* will be used to determine the starting point for the next slice.
 ![Distance-Based Slicing](./assets/dist_based.png)
 
