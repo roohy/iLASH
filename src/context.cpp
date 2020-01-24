@@ -58,7 +58,7 @@ void Context::auto_slice_map(double min_length,double cm_overlap) {
         cout<<"No Map file is available"<<endl;
         throw "No Map file read before...";
     }
-    min_length -= 0.1;
+    min_length -= 0.05;
     unsigned base = 0,last=0; //Pointers to the begining and the end of the current slice
     unsigned overlap_point=0; //pointer to keep track of the shingle overlap
     unsigned shingle_i = 0;
@@ -201,6 +201,7 @@ void Context::prepare_context(RunOptions * runOptions) {
     if(auto_slice){
         this->auto_slice_map(runOptions->slice_length,runOptions->cm_overlap);
     }else{
+        cout<<"Static slices based on SNP count. "<<runOptions->slice_size<<" SNPs per slice."<<endl;
         this->slice_map(runOptions->slice_size,runOptions->step_size);
     }
     cout<<"The seed used for pseudo-random number generation is:"<<runOptions->seed<<endl;
