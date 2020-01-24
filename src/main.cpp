@@ -18,7 +18,6 @@ RunOptions extractFromFile(char* file_addr){ //populates a runOptions instance f
     }
     string option;
     string value;
-    runOptions.auto_slice = false;
     while(optionFile>>option){
         if(option == "map"){
             optionFile>>runOptions.map_addr;
