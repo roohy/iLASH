@@ -59,7 +59,7 @@ void LSH_Slave::run() {
                 //int counter = 0;
 
                 //first, we parse
-                if(this->corpus->context->minhashable[i]){
+                if( (!this->corpus->context->auto_slice) || this->corpus->context->minhashable[i]){
                     while(parser->hasNext()){
                         //counter++;
                         //gets the hash buffer from the parser and feeds it into the minhash analyzer.
