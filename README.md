@@ -29,6 +29,7 @@ Compile iLASH using the generated Makefile:
 
 The compiled output named 'ilash' can be accessed from the *build* folder now.
 
+
 ## Running iLASH
 
 iLASH requires a configuration file as input.
@@ -36,7 +37,6 @@ iLASH requires a configuration file as input.
 `$ ilash configuration_file_address`
 
 A sample configuration file is available in the repository. 
-
 `$/build/ilash sample_config`
 
 The command above will use the sample configuration file to do a test run of iLASH. A sample result of this command can be found in `test_files/sample_output`. Please note that iLASH is a randomized algorithm. Thus, the estimated segments will not neccesarily be an exact match for the same input file in different runs. A way to address this issue is to pass a seed number to iLASH.
@@ -122,6 +122,9 @@ The columns are as follows:
 10. Percentage of k-mers(token, shingles) shared between the two samples on the matched haplotypes.
 
 The first line, for example, suggests that the first haplotype of the sample number 8 and the second haplotype of the sample number 39 share an IBD segment starting from basepair number 235345397 and ending in basepair number 236767330. The length of this segment is 2.97 cM. furthermore, the two samples share the same values for every k-mer in the region. 
+
+Compiling iLASH and running it on the provided test data using sample configuration takes about 5 seconds on a mid-2015 Macbook Pro with a 2.5 GHz quad-core Intel Core i7 Processor.
+
 
 ## Configuration File
 
