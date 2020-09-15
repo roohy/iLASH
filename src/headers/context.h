@@ -41,7 +41,7 @@ public:
     double slice_length = 3.0;
     bool auto_slice = true; //if this flag is set to true, context will use min-length value to determine the window size.
     double cm_overlap = 1.5; //for auto-slicing based on genetic distance, cm_overlap acts the same as step_size, only in terms of genetic distance.
-    uint8_t minhash_threshold; //TODO:write it
+    uint8_t minhash_threshold = 55; //TODO:write it
     bool haploid_mode; //This option can be used to run iLASH over X chromosome
 
 };

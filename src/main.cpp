@@ -97,11 +97,11 @@ void print_help(){
     cout<<"Configuration file contains the arguments to run iLASH. More details at: https://github.com/roohy/iLASH ."<<endl;
     cout<<"map and ped: Input file addresses. The input file should be phased and follow PLINK ped/map formatting."<<endl;
     cout<<"out : The address of the output IBD file."<<endl;
-    cout<<"slice_length: The length of each slice in cM distance."<<endl;
-    cout<<"min_length: The minimum length of an IBD segment in order to be written to the output."<<endl;
-    cout<<"cm_overlap: The lenght of genotype overlap between two consecutive slices in cM."<<endl;
+    cout<<"slice_length: The length of each slice in cM distance.(3.0)"<<endl;
+    cout<<"min_length: The minimum length of an IBD segment in order to be written to the output.(3.0)"<<endl;
+    cout<<"cm_overlap: The lenght of genotype overlap between two consecutive slices in cM.(1.5)"<<endl;
     cout<<"max_thread: Maximum number of threads allocated for the task."<<endl;
-    cout<<"match_threshold/interest_threshold: Minimum estimated similarity for a pair to declared a match/further investigated for possible matches in the area."<<endl;
+    cout<<"match_threshold/interest_threshold: Minimum estimated similarity for a pair to declared a match/further investigated for possible matches in the area.(0.7 & 0.99)"<<endl;
 
 }
 

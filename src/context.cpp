@@ -198,7 +198,9 @@ void Context::prepare_context(RunOptions * runOptions) {
     this->auto_slice = runOptions->auto_slice;
     this->shingle_size = runOptions->shingle_size;
     this->shingle_overlap = runOptions->shingle_overlap;
+    
     if(auto_slice){
+        this->minhash_threshold = runOptions->minhash_threshold;
         this->auto_slice_map(runOptions->slice_length,runOptions->cm_overlap);
     }else{
         cout<<"Static slices based on SNP count. "<<runOptions->slice_size<<" SNPs per slice."<<endl;
@@ -215,7 +217,7 @@ void Context::prepare_context(RunOptions * runOptions) {
     this->minimum_length = runOptions->minimum_length;
     this->max_error = runOptions->max_error;
 
-    this->minhash_threshold = runOptions->minhash_threshold;
+    // this->minhash_threshold = runOptions->minhash_threshold;
 
     this->approximate();
 
