@@ -1,3 +1,4 @@
+[ilash_analyzer]: https://github.com/roohy/ilash_analyzer
 # iLASH: Ultra-Rapid Detection of IBD Tracts
 
 ## Compilation and System Requirements
@@ -138,6 +139,8 @@ A detailed description of iLASH and its underlying algorithms can be found at. H
 - **output:** Output address. IBD tracts will be written to this file with the following format:
 
 `FAMILY_ID1 SAMPLE_ID1 FAMILY_ID2 SAMPLE_ID2 CHROMOSOME_NUMBER START_BASEPAIR END_BASEPAIR START_SNPID END_SNPID LENGTH(in cM) ESTIMATED_SIMILARITY`
+
+If you are using SHAPEIT or EAGLE or any other phasing software that generate 'hap' file format, we have made available a simple script that we use to convert them to PLINK PED files [here][ilash_analyzer].
 
 ### Segments and Slices
 
