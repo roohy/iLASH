@@ -32,11 +32,20 @@ filereader::filereader(std::string * input_string,Context * context):iss(*input_
     this->dna_hash[1] = new uint32_t[this->context->shingle_map.size()];
 
     this->hash_buffer = new uint32_t[2];
+    dnabit temp_bits;
 
     for(unsigned i = 0 ; i < this->context->map_data.size(); i++){
         this->iss>>this->bits[0][i];
         this->iss>>this->bits[1][i];
+        if(this->iss.tellg()==-1){
+            //throw exception
+            throw DimensionException();
+        }
         
+    }
+    this->iss>>temp_bits;
+    if(this->iss.tellg() != -1){
+        throw DimensionException();
     }
     delete input_string;
 }

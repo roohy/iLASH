@@ -147,6 +147,11 @@ int main(int argc, char *argv[]) {
             cout<<"Required fields for configuration file are: MAP and PED file address"<<endl;
             return 0;
         }
+        catch (DimensionException e){
+            cout<<e.what()<<endl;
+            cout<<"Please check all the samples to have the same number of features as the map file. Also, number of the meta fields in the PED file should be 6 for all samples."<<endl;
+            return 0;
+        }
 
     }
 

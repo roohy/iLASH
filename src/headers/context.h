@@ -61,6 +61,12 @@ struct FieldException: public std::exception
         return "One of the required fields is not present in the configuration file";
     }
 };
+struct DimensionException: public std::exception{
+    const char* what() const throw()
+    {
+        return "The number of SNPs in at least one of the samples does not match the number of SNPs in the map file";
+    }
+};
 
 
 //The MapData class encapsulates the lines of a MAP file.
