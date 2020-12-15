@@ -18,7 +18,7 @@
 typedef uint8_t dnabit;
 static const unsigned VERSION_MAJOR = 1;
 static const unsigned VERSION_MINOR = 0;
-static const unsigned VERSION_REVISION = 0;
+static const unsigned VERSION_REVISION = 2;
 
 //Run option is used to pass the program arguments from the file to the context class.
 class RunOptions{
