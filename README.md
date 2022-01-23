@@ -1,6 +1,13 @@
 [ilash_analyzer]: https://github.com/roohy/ilash_analyzer
 # iLASH: Ultra-Rapid Detection of IBD Tracts
 
+A technical description of this work appears at: 
+
+Ruhollah Shemirani, Gillian M. Belbin, Christy L. Avery, Eimear E. Kenny, Christopher R. Gignoux & José Luis Ambite. Rapid detection of identity-by-descent tracts for mega-scale datasets. _Nature Communications_ 12, 3546 (2021). 
+
+https://doi.org/10.1038/s41467-021-22910-w
+
+
 ## Compilation and System Requirements
 
 To compile iLASH, CMAKE v3.5 or higher is required.
