@@ -9,15 +9,20 @@
 #include "headers/fnv.h"
 #include "headers/context.h"
 #include <iostream>
+#include <boost/tokenizer.hpp>
 
 
 using namespace std;
-filereader::filereader(std::string * input_string,Context * context):iss(*input_string) {
-    this->source = input_string;
+filereader::filereader(unique_ptr<string> input_string, Context * context) {
+    // Instead of an istringstream, read the const string into a boost::tokenizer
+    boost::tokenizer<> tok(*input_string);
+    boost::tokenizer<>::iterator iter = tok.begin();
+
     this->context = context;
 
     for(unsigned i= 0 ; i<meta_size; i++){
-        this->iss>>this->meta[i];
+        this->meta[i] = *iter;
+        ++iter;
     }
     this->ind = 0;
     this->shingle_ind = 0;
@@ -35,19 +40,13 @@ filereader::filereader(std::string * input_string,Context * context):iss(*input_
     dnabit temp_bits;
 
     for(unsigned i = 0 ; i < this->context->map_data.size(); i++){
-        this->iss>>this->bits[0][i];
-        this->iss>>this->bits[1][i];
-        if(this->iss.tellg()==-1){
-            //throw exception
-            throw DimensionException();
-        }
-        
+        this->bits[0][i] = iter->front(); ++iter; // Validate that -> front will get the first char of a string
+        this->bits[1][i] = iter->front(); ++iter;
+//        if(iter == tok.end()) {
+//            //throw exception
+//            throw DimensionException();
+//        }
     }
-    this->iss>>temp_bits;
-    if(this->iss.tellg() != -1){
-        throw DimensionException();
-    }
-    delete input_string;
 }
 
 

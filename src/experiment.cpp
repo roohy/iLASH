@@ -18,8 +18,8 @@ using namespace std;
 //Thread handle function for LSH worker threads in a master-slave model.
 //Instantiates a LSH slave instance and then runs it.
 //All the inputs are the required inputs for LSH threads.
-void lsh_thread(Corpus *corpus,std::mutex * linesLock,std::queue<std::string*> * linesQ,bool *runFlag){
-    LSH_Slave slave(corpus,linesLock,linesQ,runFlag);
+void lsh_thread(Corpus *corpus, std::mutex * linesLock, shared_ptr<queue<unique_ptr<std::string>>> linesQ, bool *runFlag){
+    LSH_Slave slave(corpus,linesLock,move(linesQ),runFlag);
     slave.run();
 }
 
@@ -41,28 +41,28 @@ void Experiment::setup_context(RunOptions * runOptions) {
 //output file using output_addr.
 void Experiment::read_bulk(const char *input_addr, const char *output_addr) {
 
-    queue<string *> *linesQ = new queue<string *>(); //Samples will be loaded in the this queue
-    mutex *linesLock = new mutex; //This lock is in charge of synchronizing the linesQ
+    auto linesQ = make_shared<queue<unique_ptr<string>>>(); //Samples will be loaded in the this queue
+    auto *linesLock = new mutex; //This lock is in charge of synchronizing the linesQ
     bool runFlag = true;
 
     vector<thread> lsh_thread_list;
 
     for(unsigned i = 0; i < this->context.thread_count; i++){
-        lsh_thread_list.push_back(thread(lsh_thread,&(this->corpus),linesLock,linesQ,&runFlag));
+        lsh_thread_list.emplace_back(lsh_thread,&(this->corpus),linesLock,linesQ,&runFlag);
 
     }
     cout<<"Threads started"<<endl;
 
     ifstream ped_file(input_addr,ifstream::in);
-    string* local_str_ptr = new string;
+    auto local_str_ptr = make_unique<string>();
     long counter = 0;
 
     //Read everything from file and load it in a queue. Worker threads will process them.
     while(getline(ped_file,*local_str_ptr)){
         linesLock->lock();
-        linesQ->push(local_str_ptr);
+        linesQ->push(move(local_str_ptr));
         linesLock->unlock();
-        local_str_ptr = new string;
+        local_str_ptr = make_unique<string>();
         counter++;
         /*if(counter > 5){
             break;
@@ -88,7 +88,6 @@ void Experiment::read_bulk(const char *input_addr, const char *output_addr) {
     cout<<"Writing\n";
     cout<<"---"<<this->corpus.agg_ptr->size()<<"\n";
     this->write_to_file(output_addr);
-
 }
 
 

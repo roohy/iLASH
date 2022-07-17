@@ -21,9 +21,6 @@
 const unsigned meta_size = 6;
 
 class filereader {
-    std::string * source;
-    std::istringstream iss;
-
     unsigned long ind;
     unsigned long last;
     unsigned long head;
@@ -40,7 +37,7 @@ public:
     uint32_t ** dna_hash;
     unsigned shingle_ind;
 
-    filereader(std::string *, Context *);
+    filereader(std::unique_ptr<std::string> input_string, Context *context);
     uint32_t* getNextHashed();
     ~filereader();
     bool hasNext();
