@@ -18,7 +18,7 @@
 
 using namespace std;
 
-LSH_Slave::LSH_Slave(Corpus * corpus, std::mutex *linesLock, shared_ptr<queue<unique_ptr<string>>> linesQ, atomic_bool *runFlag) {
+LSH_Slave::LSH_Slave(Corpus * corpus, std::mutex *linesLock, shared_ptr<queue<unique_ptr<string>>> linesQ, atomic<bool> *runFlag) {
     this->corpus = corpus;
     this->linesLock = linesLock;
     this->linesQ = move(linesQ);

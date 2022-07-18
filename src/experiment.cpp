@@ -18,7 +18,7 @@ using namespace std;
 //Thread handle function for LSH worker threads in a master-slave model.
 //Instantiates a LSH slave instance and then runs it.
 //All the inputs are the required inputs for LSH threads.
-void lsh_thread(Corpus *corpus, std::mutex * linesLock, shared_ptr<queue<unique_ptr<std::string>>> linesQ, atomic_bool *runFlag){
+void lsh_thread(Corpus *corpus, std::mutex * linesLock, shared_ptr<queue<unique_ptr<std::string>>> linesQ, atomic<bool> *runFlag){
     LSH_Slave slave(corpus,linesLock,move(linesQ),runFlag);
     slave.run();
 }
@@ -43,7 +43,7 @@ void Experiment::read_bulk(const char *input_addr, const char *output_addr) {
 
     auto linesQ = make_shared<queue<unique_ptr<string>>>(); //Samples will be loaded in the this queue
     auto *linesLock = new mutex; //This lock is in charge of synchronizing the linesQ
-    atomic_bool runFlag(true);
+    atomic<bool> runFlag(true);
 
     vector<thread> lsh_thread_list;
 
