@@ -10,8 +10,16 @@ https://doi.org/10.1038/s41467-021-22910-w
 
 ## Compilation and System Requirements
 
-To compile iLASH, CMAKE v3.5 or higher is required.
-First, create a directory to generate the Makefile:
+To compile iLASH, CMAKE v3.5 or higher is required. You will need the Boost libraries headers on your system, as 
+boost::tokenizer is used for reading input. Your distribution's normal boost distribution should work, some examples are below:
+
+Installing boost with homebrew: `brew install boost`
+
+Installing boost from aptitude: `sudo apt install libboost-dev`
+
+Or Boost can be installed [from source](https://www.boost.org/doc/libs/1_79_0/more/getting_started/index.html)
+
+Then, create a directory to generate the Makefile:
 
 `$ mkdir build`
 
