@@ -12,6 +12,7 @@
 #include <queue>
 #include <mutex>
 #include <fstream>
+#include <atomic>
 
 using namespace std;
 

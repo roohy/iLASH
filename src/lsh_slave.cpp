@@ -2,6 +2,7 @@
 // Created by Ruhollah Shemirani on 3/29/17.
 //
 
+#include <atomic>
 #include <vector>
 #include "headers/filereader.h"
 #include "headers/minhasher.h"
