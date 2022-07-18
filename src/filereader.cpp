@@ -21,8 +21,7 @@ filereader::filereader(unique_ptr<string> input_string, Context * context) {
     this->context = context;
 
     for(unsigned i= 0 ; i<meta_size; i++){
-        this->meta[i] = *iter;
-        ++iter;
+        this->meta[i] = *iter++;
     }
     this->ind = 0;
     this->shingle_ind = 0;
@@ -40,8 +39,8 @@ filereader::filereader(unique_ptr<string> input_string, Context * context) {
     dnabit temp_bits;
 
     for(unsigned i = 0 ; i < this->context->map_data.size(); i++){
-        this->bits[0][i] = iter->front(); ++iter; // Validate that -> front will get the first char of a string
-        this->bits[1][i] = iter->front(); ++iter;
+        this->bits[0][i] = iter++->front();
+        this->bits[1][i] = iter++->front();
 //        if(iter == tok.end()) {
 //            //throw exception
 //            throw DimensionException();
