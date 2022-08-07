@@ -23,10 +23,10 @@
 class LSH_Slave{
     Corpus * corpus;
     std::mutex *linesLock;
-    std::queue<std::string*> *linesQ;
-    bool * runFlag; //This flag tells the program when to stop listening. 
+    std::shared_ptr<std::queue<std::unique_ptr< std::string>>> linesQ;
+    std::atomic<bool> * runFlag; //This flag tells the program when to stop listening.
 public:
-    LSH_Slave(Corpus *,std::mutex *,std::queue<std::string*> * ,bool *);
+    LSH_Slave(Corpus *corpus, std::mutex *linesLock, std::shared_ptr<std::queue<std::unique_ptr<std::string>>>, std::atomic<bool> *);
     void run(); //When the master thread is ready, it will call this function. This action initiates the process of readding from the queue and parsing it.
     inline void corpus_generator( uint32_t ** , std::unordered_map<uint32_t,unsigned short> *, unsigned ,uint32_t *);
     inline void aggregator(std::unordered_map<uint32_t,unsigned short> *, unsigned ,uint32_t *);

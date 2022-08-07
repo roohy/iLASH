@@ -10,22 +10,30 @@ https://doi.org/10.1038/s41467-021-22910-w
 
 ## Compilation and System Requirements
 
-To compile iLASH, CMAKE v3.5 or higher is required.
-First, create a directory to generate the Makefile:
+To compile iLASH, CMAKE v3.5 or higher is required. You will need the Boost libraries headers on your system, as 
+boost::tokenizer is used for reading input. Your distribution's normal boost distribution should work, some examples are below:
+
+Installing boost with homebrew: `brew install boost`
+
+Installing boost from aptitude: `sudo apt install libboost-dev`
+
+Or Boost can be installed [from source](https://www.boost.org/doc/libs/1_79_0/more/getting_started/index.html)
+
+Then, create a directory to generate the Makefile:
 
 `$ mkdir build`
 
 `$ cd build`
 
- C++ compiler used by CMAKE should support C++ 11 standard (GCC 4.8.1 or later versions). POSIX threads library is recommended for multi-threading features.
+ C++ compiler used by CMAKE should support C++ 14 standard (GCC 5 or later versions). POSIX threads library is recommended for multi-threading features.
 
 iLASH has been tested and successfully compiled using the following compilers:
 
 `Apple LLVM version 10.0.1 (clang-1001.0.46.4)- On macOS (Catalina & Mojave) - MacBook Pro, Mid 2015, 2.5 GHz Quad-Core Intel Core i7 with 16 GB DDR3 Memory`
 
-`GCC 4.8.5 on CentOS 7 - 12 Core Intel Xeon E5-2695 2.4 GHz with 128 GB DDR2 Memory`
+`Apple Clang 13.1.6 - MacOS 12.4 on MacBook Air (M1, 2020)`
 
-`GCC 5.0 on Ubuntu 14.04 - 28 Core Intel Virtual Machine with 256 GB of DDR3 Memory on Google Cloud Platform.`
+`GCC 9.4.0 on Ubuntu 20.04`
 
 Generate the Makefile using the following command.
 

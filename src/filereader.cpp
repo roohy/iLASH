@@ -9,15 +9,30 @@
 #include "headers/fnv.h"
 #include "headers/context.h"
 #include <iostream>
+#include <boost/tokenizer.hpp>
 
 
 using namespace std;
-filereader::filereader(std::string * input_string,Context * context):iss(*input_string) {
-    this->source = input_string;
+
+// Safely read the next value from the line iterator
+inline string get_next(boost::tokenizer<>::iterator& it, boost::tokenizer<>::iterator& end) {
+    if (it == end) {
+        throw DimensionException();
+    }
+
+    return *it++;
+}
+
+filereader::filereader(unique_ptr<string> input_string, Context * context) {
+    // Instead of an istringstream, read the const string into a boost::tokenizer
+    boost::tokenizer<> tok(*input_string);
+    boost::tokenizer<>::iterator iter = tok.begin();
+    auto end = tok.end();
+
     this->context = context;
 
     for(unsigned i= 0 ; i<meta_size; i++){
-        this->iss>>this->meta[i];
+        this->meta[i] = get_next(iter, end);
     }
     this->ind = 0;
     this->shingle_ind = 0;
@@ -32,22 +47,16 @@ filereader::filereader(std::string * input_string,Context * context):iss(*input_
     this->dna_hash[1] = new uint32_t[this->context->shingle_map.size()];
 
     this->hash_buffer = new uint32_t[2];
-    dnabit temp_bits;
 
     for(unsigned i = 0 ; i < this->context->map_data.size(); i++){
-        this->iss>>this->bits[0][i];
-        this->iss>>this->bits[1][i];
-        if(this->iss.tellg()==-1){
-            //throw exception
-            throw DimensionException();
-        }
-        
+        this->bits[0][i] = get_next(iter, end).front();
+        this->bits[1][i] = get_next(iter, end).front();
     }
-    this->iss>>temp_bits;
-    if(this->iss.tellg() != -1){
+
+    if(iter != tok.end()) {
+        //throw exception
         throw DimensionException();
     }
-    delete input_string;
 }
 
 
