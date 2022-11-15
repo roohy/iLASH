@@ -6,6 +6,7 @@
 #include "headers/experiment.h"
 #include "headers/lsh_slave.h"
 #include "headers/writer.h"
+#include "headers/input_source.h"
 
 #include <thread>
 #include <iostream>
@@ -57,10 +58,12 @@ void Experiment::read_bulk(const char *input_addr, const char *output_addr) {
     auto local_str_ptr = make_unique<string>();
     long counter = 0;
 
+    auto input = Input_Source::buildInputSource(input_addr);
+
     //Read everything from file and load it in a queue. Worker threads will process them.
-    while(getline(ped_file,*local_str_ptr)){
+    while(input->getNextLine(*local_str_ptr)){
         linesLock->lock();
-        linesQ->push(move(local_str_ptr));
+        linesQ->push(std::move(local_str_ptr));
         linesLock->unlock();
         local_str_ptr = make_unique<string>();
         counter++;
