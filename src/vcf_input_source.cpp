@@ -8,9 +8,14 @@
 
 #include "headers/vcf_input_source.h"
 
-Vcf_Input_Source::Vcf_Input_Source(const char *input_addr) : instream{input_addr, std::ifstream::in} {
+Vcf_Input_Source::Vcf_Input_Source(const char *input_addr) : instream{std::make_unique<std::ifstream>(input_addr, std::ifstream::in)} {
 
-    lines = transposeVcfToPed(instream);
+    lines = transposeVcfToPed(*instream);
+    iter = lines.begin();
+}
+
+Vcf_Input_Source::Vcf_Input_Source(std::unique_ptr<std::istream> &&input_stream) : instream{std::move(input_stream)} {
+    lines = transposeVcfToPed(*instream);
     iter = lines.begin();
 }
 
@@ -40,7 +45,7 @@ bool Vcf_Input_Source::getNextLine(std::string &line) {
  * @param infile - An ifstream of the VCF file to read in
  * @return a vector with one line per individual as a string
  */
-std::vector<std::string> Vcf_Input_Source::transposeVcfToPed(std::ifstream &infile) {
+std::vector<std::string> Vcf_Input_Source::transposeVcfToPed(std::istream &infile) {
     std::vector<std::string> pedLines;
 
     std::string line;
