@@ -17,7 +17,7 @@
 #include <map>
 #include <fstream>
 #include <unordered_map>
-
+#include <memory>
 
 
 class LSH_Slave{
