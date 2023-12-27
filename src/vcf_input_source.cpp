@@ -42,6 +42,8 @@ bool Vcf_Input_Source::getNextLine(std::string &line) {
  * a set of columns and building the phased .ped file in chunks.
  *
  * We could also store the genetic info in a more compact from, and build the full line string on demand.
+ *
+ *
  * @param infile - An ifstream of the VCF file to read in
  * @return a vector with one line per individual as a string
  */

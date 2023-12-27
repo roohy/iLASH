@@ -4,7 +4,6 @@
 #include <boost/iostreams/device/file.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
 #include <boost/iostreams/filter/zstd.hpp>
-#include <boost/algorithm/string.hpp>
 
 #include "headers/vcf_input_source.h"
 
