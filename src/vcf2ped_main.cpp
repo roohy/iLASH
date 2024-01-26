@@ -19,11 +19,11 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    auto in = std::make_unique<boost::iostreams::filtering_stream<boost::iostreams::input>>();
-    in->push(boost::iostreams::gzip_decompressor());
-    in->push(boost::iostreams::file_source(filename));
+//    auto in = std::make_unique<boost::iostreams::filtering_stream<boost::iostreams::input>>();
+//    in->push(boost::iostreams::gzip_decompressor());
+//    in->push(boost::iostreams::file_source(filename));
 
-    Vcf_Input_Source transposer(std::move(in));
+    Vcf_Input_Source transposer(filename, 200);
 
     std::string infileName = std::string(filename);
     std::string outfileName = infileName.substr(0, infileName.size() - 7) + ".ped.zst";

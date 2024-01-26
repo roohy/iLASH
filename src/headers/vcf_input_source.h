@@ -13,10 +13,14 @@
 
 #include "input_source.h"
 
+/**
+ * Decompresses and transposes a VCF such that samples are returned as a complete record.
+ * Memory usage is limited by chunk_size, which will control the maximum number of sample
+ * records that are held in memory at once.
+ */
 class Vcf_Input_Source : public Input_Source {
 public:
-    Vcf_Input_Source(const char *input_addr);
-    Vcf_Input_Source(std::unique_ptr<std::istream> &&input_stream);
+    Vcf_Input_Source(const char *input_addr, const size_t = 1000);
     ~Vcf_Input_Source() override = default;
 
     bool getNextLine(std::string &line) override;
@@ -25,7 +29,13 @@ private:
     std::vector<std::string> lines;
     std::vector<std::string>::iterator iter;
 
-    static std::vector<std::string> transposeVcfToPed(std::istream &infile);
+    const size_t chunk_size;
+    size_t chunk_start_idx;
+    size_t chunk_end_idx; // Ended up only using a start index
+    const std::string input_file_path;
+
+    bool transposeNextChunk();
+    void resetIStream();
 };
 
 #endif //ILASH_VCF_INPUT_SOURCE_H

@@ -1,9 +1,9 @@
 
-map ./test_files/test_12.map
+map ./test_files/BioVU_Eur_chr22.map
 
-ped ./test_files/phased.vcf
+ped ./test_files/BioVU_Eur_chr22.ped
 
-output ./test_files/output.match
+output ./test_files/BioVU_output.match
 
 slice_size 350
 

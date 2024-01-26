@@ -2,21 +2,40 @@
 #include <istream>
 #include <vector>
 #include <string>
+#include <memory>
+
+#include <iostream>
 
 #include <boost/tokenizer.hpp>
 #include <boost/format.hpp>
 
+#include <boost/iostreams/filtering_stream.hpp>
+#include <boost/iostreams/device/file.hpp>
+#include <boost/iostreams/filter/gzip.hpp>
+#include <boost/iostreams/filter/zstd.hpp>
+
 #include "headers/vcf_input_source.h"
 
-Vcf_Input_Source::Vcf_Input_Source(const char *input_addr) : instream{std::make_unique<std::ifstream>(input_addr, std::ifstream::in)} {
+namespace bio = boost::iostreams;
 
-    lines = transposeVcfToPed(*instream);
+Vcf_Input_Source::Vcf_Input_Source(const char *input_addr, const size_t chunk_size) :
+        input_file_path{input_addr},
+        instream{
+                std::make_unique<std::ifstream>(input_file_path, std::ifstream::in)},
+        chunk_size{chunk_size},
+        chunk_start_idx{0},
+        chunk_end_idx{chunk_size} {
+    transposeNextChunk();
     iter = lines.begin();
 }
 
-Vcf_Input_Source::Vcf_Input_Source(std::unique_ptr<std::istream> &&input_stream) : instream{std::move(input_stream)} {
-    lines = transposeVcfToPed(*instream);
-    iter = lines.begin();
+
+void Vcf_Input_Source::resetIStream() {
+    auto in = std::make_unique<bio::filtering_stream<bio::input>>();
+    in->push(bio::gzip_decompressor());
+    in->push(bio::file_source(input_file_path));
+
+    instream = std::move(in);
 }
 
 /**
@@ -27,7 +46,12 @@ Vcf_Input_Source::Vcf_Input_Source(std::unique_ptr<std::istream> &&input_stream)
  */
 bool Vcf_Input_Source::getNextLine(std::string &line) {
     if (iter == lines.end()) {
-        return false;
+        // Transpose will update lines
+        if (!transposeNextChunk()) {
+            return false;
+        }
+
+        iter = lines.begin();
     }
 
     line = std::move(*iter++);
@@ -35,7 +59,7 @@ bool Vcf_Input_Source::getNextLine(std::string &line) {
 }
 
 /**
- * Reads the entire vcf into memory, and transposes it into 1 line per individual.
+ * PREVIOUSLY: Reads the entire vcf into memory, and transposes it into 1 line per individual.
  * This uses significant memory, based on the size of the input VCF.
  *
  * A more memory-efficient approach would be chunking it, making several passes over the input file each of which gets
@@ -43,37 +67,64 @@ bool Vcf_Input_Source::getNextLine(std::string &line) {
  *
  * We could also store the genetic info in a more compact from, and build the full line string on demand.
  *
+ * Update: This now reads in chunks, and returns an empty vector if we have reached the end of the data.
  *
  * @param infile - An ifstream of the VCF file to read in
  * @return a vector with one line per individual as a string
  */
-std::vector<std::string> Vcf_Input_Source::transposeVcfToPed(std::istream &infile) {
+bool Vcf_Input_Source::transposeNextChunk() {
+    resetIStream();
     std::vector<std::string> pedLines;
+    std::vector<std::string> sampleNames;
 
     std::string line;
-    while (std::getline(infile, line)) {
-        if (line.empty() || (line)[0] == '#') {
+
+    std::cout << "Starting next chunk\n";
+
+    while (std::getline(*instream, line)) {
+
+        // Skip info lines
+        if (line.empty() || (line[0] == '#' && line[1] == '#')) {
             continue;
         }
 
         boost::char_separator<char> sep("\t");
 
         boost::tokenizer<boost::char_separator<char>> tok(line, sep);
-        boost::tokenizer<boost::char_separator<char>>::iterator iter = tok.begin();
+        boost::tokenizer<boost::char_separator<char>>::iterator line_iter = tok.begin();
         auto end = tok.end();
 
         for (int i = 0; i < 9; ++i) {
-            iter++; // Skip to the genetic data
+            ++line_iter; // Skip to the sample data
         }
 
-        size_t i = 0;
-        for (; iter != end; iter++) {
+        for (int i = 0; i < chunk_start_idx; ++i) {
+            if (line_iter++ == end) { // Skip to start of this chunk
+                return false; // Return empty vector if we reached end of input
+            }
+        }
+
+        // Header with sample names, populate sample names then go to next line
+        if (line[0] == '#') {
+            for (; line_iter != end; ++line_iter) {
+                sampleNames.emplace_back(*line_iter);
+            }
+            continue;
+        }
+
+        size_t i = 0; // Index within current chunk
+        for (; line_iter != end; ++line_iter) {
             if (pedLines.size() <= i) {
-                auto individualData = boost::format("0 %s 0 0 0 -9") % i;
+                auto individualData = boost::format("0 %s 0 0 0 -9") % sampleNames.at(i);
                 pedLines.emplace_back(individualData.str());
+
+                // Debugging
+                if (i % 10 == 0) {
+                    std::cout << "Making record for individual " << i << " in chunk\n";
+                }
             }
 
-            auto pair = *iter;
+            auto pair = *line_iter;
             auto first = pair[0];
             auto second = pair[2];
 
@@ -87,8 +138,15 @@ std::vector<std::string> Vcf_Input_Source::transposeVcfToPed(std::istream &infil
             pedLines[i].push_back(second);
 
             ++i;
+            if (i >= chunk_size) {
+                break;
+            }
         }
     }
 
-    return pedLines;
+    // Export results. Should this be a move?
+    // If we're moving to threads and queues it should.
+    chunk_start_idx += chunk_size;
+    lines = pedLines;
+    return true;
 }
