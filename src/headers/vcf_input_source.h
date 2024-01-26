@@ -20,7 +20,7 @@
  */
 class Vcf_Input_Source : public Input_Source {
 public:
-    Vcf_Input_Source(const char *input_addr, const size_t = 1000);
+    Vcf_Input_Source(const char *input_addr, const size_t = 500);
     ~Vcf_Input_Source() override = default;
 
     bool getNextLine(std::string &line) override;
