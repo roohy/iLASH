@@ -13,6 +13,10 @@
 
 using namespace std;
 
+FileException::FileException(const char *filename) {
+    message = std::string(std::string("File") + filename + " does not exist or iLASH lacks proper permissions");
+}
+
 //Captures one line in map file
 MapData::MapData(string chrom_in, string RSID_in, double dist_in, unsigned pos_in) {
     this->chrome = chrom_in;
@@ -33,7 +37,7 @@ Context::Context()
 void Context::read_map(const char * map_addr) {
     ifstream maps(map_addr,ifstream::in);
     if(maps.fail()){
-        throw FileException();
+        throw FileException(map_addr);
     }
     string chrom;
     string RSID_in;
@@ -225,9 +229,6 @@ void Context::prepare_context(RunOptions * runOptions) {
     cout<<"The number of cores on the host: "<<this->thread_count<<endl;
     if(runOptions->max_thread > 0 )
         this->thread_count = runOptions->max_thread;
-
-
-
 }
 
 

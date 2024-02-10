@@ -3,7 +3,6 @@
 #include <vector>
 #include <string>
 #include <memory>
-
 #include <iostream>
 
 #include <boost/tokenizer.hpp>
@@ -15,13 +14,13 @@
 #include <boost/iostreams/filter/zstd.hpp>
 
 #include "headers/vcf_input_source.h"
+#include "headers/context.h"
 
 namespace bio = boost::iostreams;
 
 Vcf_Input_Source::Vcf_Input_Source(const char *input_addr, const size_t chunk_size) :
         input_file_path{input_addr},
-        instream{
-                std::make_unique<std::ifstream>(input_file_path, std::ifstream::in)},
+        instream{},
         chunk_size{chunk_size},
         chunk_start_idx{0},
         chunk_end_idx{chunk_size} {
@@ -30,9 +29,32 @@ Vcf_Input_Source::Vcf_Input_Source(const char *input_addr, const size_t chunk_si
 }
 
 
+/**
+ * Restart stream to beginning of file.
+ *
+ * Determine if file is uncompressed, gzipped, or zstd compressed.
+ * We don't need to check this every time, but we are for now.
+ *
+ */
 void Vcf_Input_Source::resetIStream() {
+    std::ifstream istream(input_file_path, std::ios::binary);
+    char signature[4];
+    if (!istream.read(signature, 4)) {
+        // The file could not be read
+//        throw FileException(input_file_path.c_str());
+        throw std::runtime_error("Could not open file" + input_file_path);
+    }
+
     auto in = std::make_unique<bio::filtering_stream<bio::input>>();
-    in->push(bio::gzip_decompressor());
+    if (signature[0] == '\x1f' && signature[1] == '\x8b') {
+        // This is a gzip file
+        in->push(bio::gzip_decompressor());
+    } else if (signature[0] == '\x28' && signature[1] == '\xb5' && signature[2] == '\x2f' && signature[3] == '\xfd') {
+        // This is a zstd file
+        in->push(bio::zstd_decompressor());
+    }
+    // We assume uncompressed if not zstd or gzip
+
     in->push(bio::file_source(input_file_path));
 
     instream = std::move(in);
@@ -99,7 +121,7 @@ bool Vcf_Input_Source::transposeNextChunk() {
         }
 
         for (int i = 0; i < chunk_start_idx; ++i) {
-            if (line_iter++ == end) { // Skip to start of this chunk
+            if (++line_iter == end) { // Skip to start of this chunk
                 return false; // Return empty vector if we reached end of input
             }
         }

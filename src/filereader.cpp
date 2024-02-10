@@ -15,7 +15,7 @@
 using namespace std;
 
 // Safely read the next value from the line iterator
-inline string get_next(boost::tokenizer<>::iterator& it, boost::tokenizer<>::iterator& end) {
+inline string get_next(boost::tokenizer<boost::char_separator<char>>::iterator& it, boost::tokenizer<boost::char_separator<char>>::iterator& end) {
     if (it == end) {
         throw DimensionException();
     }
@@ -25,8 +25,9 @@ inline string get_next(boost::tokenizer<>::iterator& it, boost::tokenizer<>::ite
 
 filereader::filereader(unique_ptr<string> input_string, Context * context) {
     // Instead of an istringstream, read the const string into a boost::tokenizer
-    boost::tokenizer<> tok(*input_string);
-    boost::tokenizer<>::iterator iter = tok.begin();
+    boost::char_separator<char> sep(" ");
+    boost::tokenizer<boost::char_separator<char>> tok(*input_string, sep);
+    boost::tokenizer<boost::char_separator<char>>::iterator iter = tok.begin();
     auto end = tok.end();
 
     this->context = context;

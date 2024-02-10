@@ -17,10 +17,16 @@
  * Decompresses and transposes a VCF such that samples are returned as a complete record.
  * Memory usage is limited by chunk_size, which will control the maximum number of sample
  * records that are held in memory at once.
+ *
+ * Maybe instead of chunk size it could take "number of chunks" and figure out
+ * how to divide the input?
+ *
+ * We also could potentially send another format to the threads, as they are duplicating the splitting
+ * that we already did here.
  */
 class Vcf_Input_Source : public Input_Source {
 public:
-    Vcf_Input_Source(const char *input_addr, const size_t = 500);
+    Vcf_Input_Source(const char *input_addr, size_t = 3000);
     ~Vcf_Input_Source() override = default;
 
     bool getNextLine(std::string &line) override;
