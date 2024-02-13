@@ -4,6 +4,7 @@
 #include <iterator>
 #include <istream>
 #include <fstream>
+#include <memory>
 
 #include "input_source.h"
 
@@ -14,7 +15,7 @@ public:
 
     bool getNextLine(std::string &line) override;
 private:
-    std::ifstream instream;
+    std::unique_ptr<std::istream> instream;
 };
 
 #endif //ILASH_PED_INPUT_SOURCE_H

@@ -14,7 +14,6 @@
 #include <boost/iostreams/filter/zstd.hpp>
 
 #include "headers/vcf_input_source.h"
-#include "headers/context.h"
 
 namespace bio = boost::iostreams;
 
