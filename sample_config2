@@ -1,9 +1,9 @@
 
-map ./test_files/test_12.map
+map ./test_files/phased_vcf.map
 
-ped ./test_files/phased.vcf
+ped ./test_files/phased.vcf.zst
 
-output ./test_files/output.match
+output ./test_files/output_vcf.match
 
 slice_size 350
 

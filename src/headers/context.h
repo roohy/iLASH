@@ -49,11 +49,17 @@ public:
 
 struct FileException: public std::exception
 {
+private:
+    std::string message;
+public:
+    explicit FileException(const char* filename = "");
+
     const char* what() const throw()
     {
-        return "File does not exsist or iLASH lacks proper permissions";
+        return message.c_str();
     }
 };
+
 struct FieldException: public std::exception
 {
     const char* what() const throw()
