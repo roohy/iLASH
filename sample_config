@@ -17,7 +17,7 @@ shingle_overlap 0
 
 bucket_count 5
 
-max_thread 2
+max_thread 20
 
 match_threshold 0.99
 

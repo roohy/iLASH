@@ -2,7 +2,6 @@
 // Created by Ruhollah Shemirani on 3/29/17.
 //
 
-#include <atomic>
 #include <vector>
 #include "headers/filereader.h"
 #include "headers/minhasher.h"
@@ -19,15 +18,15 @@
 
 using namespace std;
 
-LSH_Slave::LSH_Slave(Corpus * corpus, std::mutex *linesLock, shared_ptr<queue<unique_ptr<string>>> linesQ, atomic<bool> *runFlag) {
+LSH_Slave::LSH_Slave(Corpus * corpus, std::mutex *linesLock, std::queue<std::string *> *linesQ, bool *runFlag) {
     this->corpus = corpus;
     this->linesLock = linesLock;
-    this->linesQ = move(linesQ);
+    this->linesQ = linesQ;
     this->runFlag = runFlag;
 }
 
 void LSH_Slave::run() { 
-    auto line = make_unique<string>();
+    string * line = NULL;
     while(*runFlag) {
         //trying to read from input Q
         this->linesLock->lock();
@@ -38,12 +37,12 @@ void LSH_Slave::run() {
             this_thread::sleep_for(chrono::milliseconds(100));
         }
         else {
-            line = move(this->linesQ->front());
+            line = this->linesQ->front();
             this->linesQ->pop();
             this->linesLock->unlock();
 
-            auto *parser = new filereader(std::move(line),this->corpus->context);
-            auto *minhash = new Minhasher(this->corpus->context);
+            filereader *parser = new filereader(line,this->corpus->context);
+            Minhasher *minhash = new Minhasher(this->corpus->context);
 
             parser->register_to_experiment(this->corpus); //registers the two haplotypes read into the corpus. 
 

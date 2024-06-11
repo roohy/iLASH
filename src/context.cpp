@@ -223,6 +223,7 @@ void Context::prepare_context(RunOptions * runOptions) {
 
     this->thread_count = std::thread::hardware_concurrency();
     cout<<"The number of cores on the host: "<<this->thread_count<<endl;
+    this->thread_count *= 2;
     if(runOptions->max_thread > 0 )
         this->thread_count = runOptions->max_thread;
 
