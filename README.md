@@ -37,6 +37,7 @@ Compile iLASH using the generated Makefile:
 
 The compiled output named 'ilash' can be accessed from the *build* folder now.
 
+A faster boost-version is available on the 'boost-version' branch. However, it is not compatible with all environments. We have not been able to test it on our servers.
 
 ## Running iLASH
 
