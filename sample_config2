@@ -1,0 +1,36 @@
+
+map ./test_files/phased_vcf.map
+
+ped ./test_files/phased.vcf.zst
+
+output ./test_files/output_vcf.match
+
+slice_size 350
+
+step_size 350
+
+perm_count 20
+
+shingle_size 15
+
+shingle_overlap 0
+
+bucket_count 5
+
+max_thread 2
+
+match_threshold 0.99
+
+interest_threshold 0.70
+
+min_length 2.9
+
+auto_slice 1
+
+slice_length 2.9
+
+cm_overlap 1
+
+minhash_threshold 55
+
+
